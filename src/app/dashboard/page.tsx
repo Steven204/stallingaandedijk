@@ -16,8 +16,9 @@ export default async function DashboardPage() {
     openAppointments,
     pendingRegistrations,
     pendingAppointments,
+    pendingVehicles,
   ] = await Promise.all([
-    prisma.vehicle.count({ where: { status: "STORED" } }),
+    prisma.vehicle.count({ where: { status: "STORED", isApproved: true } }),
     prisma.user.count({ where: { role: "CUSTOMER", isApproved: true } }),
     prisma.storageLocation.groupBy({
       by: ["isOccupied"],
@@ -28,6 +29,7 @@ export default async function DashboardPage() {
     }),
     prisma.user.count({ where: { role: "CUSTOMER", isApproved: false } }),
     prisma.appointment.count({ where: { status: "REQUESTED" } }),
+    prisma.vehicle.count({ where: { isApproved: false } }),
   ]);
 
   const totalLocations = locationStats.reduce((sum: number, g: typeof locationStats[number]) => sum + g._count, 0);
@@ -73,54 +75,61 @@ export default async function DashboardPage() {
       </div>
 
       {/* Action cards */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card className={pendingRegistrations > 0 ? "border-orange-300" : ""}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <UserPlus className={`h-5 w-5 ${pendingRegistrations > 0 ? "text-orange-600" : "text-muted-foreground"}`} />
-              Aanmeldingen goedkeuren
-            </CardTitle>
-            <Link href="/dashboard/registrations">
-              <Button variant="ghost" size="sm">
-                Bekijken <ArrowRight className="ml-1 h-3 w-3" />
-              </Button>
-            </Link>
-          </CardHeader>
-          <CardContent>
-            {pendingRegistrations > 0 ? (
-              <p className="text-orange-700">
-                <span className="text-3xl font-bold">{pendingRegistrations}</span>
-                <span className="text-sm ml-2">wacht{pendingRegistrations === 1 ? "" : "en"} op goedkeuring</span>
-              </p>
-            ) : (
-              <p className="text-muted-foreground text-sm">Geen openstaande aanmeldingen</p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className={pendingAppointments > 0 ? "border-orange-300" : ""}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Clock className={`h-5 w-5 ${pendingAppointments > 0 ? "text-orange-600" : "text-muted-foreground"}`} />
-              Afspraken goedkeuren
-            </CardTitle>
-            <Link href="/dashboard/appointments">
-              <Button variant="ghost" size="sm">
-                Bekijken <ArrowRight className="ml-1 h-3 w-3" />
-              </Button>
-            </Link>
-          </CardHeader>
-          <CardContent>
-            {pendingAppointments > 0 ? (
-              <p className="text-orange-700">
-                <span className="text-3xl font-bold">{pendingAppointments}</span>
-                <span className="text-sm ml-2">afspra{pendingAppointments === 1 ? "ak" : "ken"} wacht{pendingAppointments === 1 ? "" : "en"} op goedkeuring</span>
-              </p>
-            ) : (
-              <p className="text-muted-foreground text-sm">Geen openstaande afspraken</p>
-            )}
-          </CardContent>
-        </Card>
+      <div className="grid gap-4 md:grid-cols-3">
+        {[
+          {
+            title: "Aanmeldingen",
+            count: pendingRegistrations,
+            icon: UserPlus,
+            href: "/dashboard/registrations",
+            label: "aanmelding",
+            labelPlural: "aanmeldingen",
+          },
+          {
+            title: "Voertuig aanvragen",
+            count: pendingVehicles,
+            icon: Car,
+            href: "/dashboard/vehicle-requests",
+            label: "aanvraag",
+            labelPlural: "aanvragen",
+          },
+          {
+            title: "Afspraken",
+            count: pendingAppointments,
+            icon: Clock,
+            href: "/dashboard/appointments",
+            label: "afspraak",
+            labelPlural: "afspraken",
+          },
+        ].map((card) => (
+          <Card key={card.title} className={card.count > 0 ? "border-orange-300" : ""}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <card.icon className={`h-5 w-5 ${card.count > 0 ? "text-orange-600" : "text-muted-foreground"}`} />
+                {card.title}
+              </CardTitle>
+              <Link href={card.href}>
+                <Button variant="ghost" size="sm">
+                  Bekijken <ArrowRight className="ml-1 h-3 w-3" />
+                </Button>
+              </Link>
+            </CardHeader>
+            <CardContent>
+              {card.count > 0 ? (
+                <p className="text-orange-700">
+                  <span className="text-3xl font-bold">{card.count}</span>
+                  <span className="text-sm ml-2">
+                    {card.count === 1 ? card.label : card.labelPlural} wacht{card.count === 1 ? "" : "en"} op goedkeuring
+                  </span>
+                </p>
+              ) : (
+                <p className="text-muted-foreground text-sm">
+                  Geen openstaande {card.labelPlural}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );

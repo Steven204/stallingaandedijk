@@ -30,9 +30,11 @@ export async function addVehicle(formData: FormData) {
       brand,
       model,
       lengthInMeters,
+      isApproved: false,
     },
   });
 
   revalidatePath("/portal/my-vehicles");
   revalidatePath("/portal");
+  revalidatePath("/dashboard/vehicle-requests");
 }

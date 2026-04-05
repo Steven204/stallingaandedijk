@@ -64,20 +64,26 @@ export default async function MyVehiclesPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {vehicles.map((vehicle: typeof vehicles[number]) => (
-            <Card key={vehicle.id}>
+            <Card key={vehicle.id} className={!vehicle.isApproved ? "border-orange-300 opacity-75" : ""}>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span className="font-mono">{vehicle.licensePlate}</span>
-                  <Badge>{statusLabels[vehicle.status]}</Badge>
+                  {!vehicle.isApproved ? (
+                    <Badge variant="outline" className="text-orange-600 border-orange-300">Wacht op goedkeuring</Badge>
+                  ) : (
+                    <Badge>{statusLabels[vehicle.status]}</Badge>
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <div className="flex justify-end">
-                  <MaintenanceForm
-                    vehicleId={vehicle.id}
-                    licensePlate={vehicle.licensePlate}
-                  />
-                </div>
+                {vehicle.isApproved && (
+                  <div className="flex justify-end">
+                    <MaintenanceForm
+                      vehicleId={vehicle.id}
+                      licensePlate={vehicle.licensePlate}
+                    />
+                  </div>
+                )}
                 <p className="text-sm">
                   <strong>Type:</strong> {vehicleTypeLabels[vehicle.type]}
                 </p>

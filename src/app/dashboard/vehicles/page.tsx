@@ -38,6 +38,7 @@ export default async function VehiclesPage() {
   const session = await getSession();
 
   const vehicles = await prisma.vehicle.findMany({
+    where: { isApproved: true },
     include: {
       customer: { select: { name: true } },
       placements: {

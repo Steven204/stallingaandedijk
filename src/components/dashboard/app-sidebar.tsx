@@ -86,6 +86,7 @@ const menuSections: MenuSection[] = [
   {
     label: "Voertuigen",
     items: [
+      { title: "Voertuig aanvragen", href: "/dashboard/vehicle-requests", icon: Car, roles: ["ADMIN"] },
       { title: "Voertuigen", href: "/dashboard/vehicles", icon: Car, roles: ["ADMIN", "EMPLOYEE"] },
       { title: "Onderhoud", href: "/dashboard/maintenance", icon: Wrench, roles: ["ADMIN", "EMPLOYEE"] },
     ],
