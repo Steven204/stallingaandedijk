@@ -1,7 +1,7 @@
 import { getSession } from "@/lib/auth-utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Car, CalendarDays, Receipt, UserCog } from "lucide-react";
+import { Home, Car, CalendarDays, Receipt, UserCog } from "lucide-react";
 import { PortalLogout } from "@/components/portal/portal-logout";
 
 export default async function PortalLayout({
@@ -23,7 +23,13 @@ export default async function PortalLayout({
           </div>
           <PortalLogout />
         </div>
-        <nav className="max-w-4xl mx-auto px-4 pb-2 flex gap-2">
+        <nav className="max-w-4xl mx-auto px-4 pb-2 flex gap-2 overflow-x-auto">
+          <Link href="/portal">
+            <Button variant="ghost" size="sm">
+              <Home className="mr-1 h-4 w-4" />
+              Dashboard
+            </Button>
+          </Link>
           <Link href="/portal/my-vehicles">
             <Button variant="ghost" size="sm">
               <Car className="mr-1 h-4 w-4" />
