@@ -33,7 +33,7 @@ export async function createCustomer(formData: FormData) {
   const password = data.password || "welkom123";
   const hashedPassword = await hash(password, 12);
 
-  await prisma.user.create({
+  const customer = await prisma.user.create({
     data: {
       email: data.email,
       hashedPassword,
@@ -46,7 +46,26 @@ export async function createCustomer(formData: FormData) {
     },
   });
 
+  // Create vehicle if provided
+  const licensePlate = (formData.get("licensePlate") as string)?.toUpperCase().trim();
+  const vehicleType = formData.get("vehicleType") as string;
+  const lengthInMeters = parseFloat(formData.get("lengthInMeters") as string);
+
+  if (licensePlate && vehicleType && lengthInMeters > 0) {
+    await prisma.vehicle.create({
+      data: {
+        customerId: customer.id,
+        type: vehicleType as "CARAVAN" | "CAMPER" | "BOAT" | "OLDTIMER" | "CAR",
+        licensePlate,
+        brand: (formData.get("vehicleBrand") as string) || undefined,
+        model: (formData.get("vehicleModel") as string) || undefined,
+        lengthInMeters,
+      },
+    });
+  }
+
   revalidatePath("/dashboard/customers");
+  revalidatePath("/dashboard/vehicles");
   redirect("/dashboard/customers");
 }
 
