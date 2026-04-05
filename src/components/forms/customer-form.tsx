@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createCustomer, updateCustomer, deleteCustomer } from "@/app/actions/customers";
+import { BrandCombobox } from "@/components/forms/brand-combobox";
 import type { User } from "@/generated/prisma";
 
 interface CustomerFormProps {
@@ -141,15 +142,14 @@ export function CustomerForm({ customer }: CustomerFormProps) {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="vehicleBrand">Merk</Label>
-              <Input id="vehicleBrand" name="vehicleBrand" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="vehicleModel">Model</Label>
-              <Input id="vehicleModel" name="vehicleModel" />
-            </div>
+          <div className="space-y-2">
+            <Label>Merk</Label>
+            <BrandCombobox name="vehicleBrand" />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="vehicleModel">Model</Label>
+            <Input id="vehicleModel" name="vehicleModel" />
           </div>
 
           <div className="space-y-2">

@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createVehicle, updateVehicle, deleteVehicle } from "@/app/actions/vehicles";
+import { BrandCombobox } from "@/components/forms/brand-combobox";
 import type { Vehicle } from "@/generated/prisma";
 
 interface VehicleFormProps {
@@ -84,23 +85,18 @@ export function VehicleForm({ vehicle, customers }: VehicleFormProps) {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="brand">Merk</Label>
-          <Input
-            id="brand"
-            name="brand"
-            defaultValue={vehicle?.brand ?? ""}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="model">Model</Label>
-          <Input
-            id="model"
-            name="model"
-            defaultValue={vehicle?.model ?? ""}
-          />
-        </div>
+      <div className="space-y-2">
+        <Label>Merk</Label>
+        <BrandCombobox name="brand" defaultValue={vehicle?.brand ?? ""} />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="model">Model</Label>
+        <Input
+          id="model"
+          name="model"
+          defaultValue={vehicle?.model ?? ""}
+        />
       </div>
 
       <div className="space-y-2">
