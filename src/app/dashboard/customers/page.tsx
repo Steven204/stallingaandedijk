@@ -18,7 +18,7 @@ export default async function CustomersPage() {
   await requireRole("ADMIN");
 
   const customers = await prisma.user.findMany({
-    where: { role: "CUSTOMER" },
+    where: { role: "CUSTOMER", isApproved: true },
     include: {
       _count: { select: { vehicles: true, contracts: true } },
     },
