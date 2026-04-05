@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createAppointment } from "@/app/actions/portal-appointments";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ArrowRight } from "lucide-react";
 
 interface ClosedSeason {
   id: string;
@@ -36,6 +36,7 @@ const monthNames = [
 
 export function NewAppointmentForm({ vehicles, closedSeasons }: Props) {
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   // Minimum date = 4 days from now
   const minDate = new Date();
@@ -44,8 +45,10 @@ export function NewAppointmentForm({ vehicles, closedSeasons }: Props) {
 
   async function handleSubmit(formData: FormData) {
     setError(null);
+    setSuccess(false);
     try {
       await createAppointment(formData);
+      setSuccess(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Er is een fout opgetreden");
     }
@@ -71,48 +74,55 @@ export function NewAppointmentForm({ vehicles, closedSeasons }: Props) {
       )}
 
       <form action={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label>Voertuig</Label>
-            <Select name="vehicleId" required>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecteer" />
-              </SelectTrigger>
-              <SelectContent>
-                {vehicles.map((v) => (
-                  <SelectItem key={v.id} value={v.id}>
-                    {v.licensePlate}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label>Type</Label>
-            <Select name="type" required>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecteer" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="PICKUP">Ophalen</SelectItem>
-                <SelectItem value="DROPOFF">Wegbrengen</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label>Gewenste datum</Label>
-            <Input name="requestedDate" type="date" min={minDateStr} required />
+        <div className="space-y-2">
+          <Label>Voertuig *</Label>
+          <Select name="vehicleId" required>
+            <SelectTrigger>
+              <SelectValue placeholder="Selecteer voertuig" />
+            </SelectTrigger>
+            <SelectContent>
+              {vehicles.map((v) => (
+                <SelectItem key={v.id} value={v.id}>
+                  {v.licensePlate}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="rounded-lg border p-4 space-y-4">
+          <p className="text-sm font-medium">Wanneer wilt u uw voertuig gebruiken?</p>
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-3 items-end">
+            <div className="space-y-2">
+              <Label>Ophalen op *</Label>
+              <Input name="pickupDate" type="date" min={minDateStr} required />
+            </div>
+            <div className="hidden sm:flex items-center justify-center pb-2">
+              <ArrowRight className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div className="space-y-2">
+              <Label>Terugbrengen op</Label>
+              <Input name="returnDate" type="date" min={minDateStr} />
+              <p className="text-xs text-muted-foreground">Optioneel — vul in als u al weet wanneer</p>
+            </div>
           </div>
         </div>
+
         <div className="space-y-2">
           <Label>Notities (optioneel)</Label>
-          <Textarea name="notes" placeholder="Extra informatie..." />
+          <Textarea name="notes" placeholder="Bijv. graag voor 10:00, of specifieke wensen..." />
         </div>
 
         {error && (
           <div className="flex items-center gap-2 text-red-600 text-sm rounded-lg border border-red-300 bg-red-50 p-3">
             <AlertCircle className="h-4 w-4 shrink-0" />
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="text-green-600 text-sm rounded-lg border border-green-300 bg-green-50 p-3">
+            Afspraak succesvol aangevraagd! De beheerder neemt contact op ter bevestiging.
           </div>
         )}
 

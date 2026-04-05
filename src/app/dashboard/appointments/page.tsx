@@ -14,11 +14,6 @@ import {
 import { AppointmentActions } from "@/components/dashboard/appointment-actions";
 import { AlertCircle, CalendarDays, CheckCircle2, Clock } from "lucide-react";
 
-const typeLabels: Record<string, string> = {
-  PICKUP: "Ophalen",
-  DROPOFF: "Wegbrengen",
-};
-
 const statusLabels: Record<string, string> = {
   REQUESTED: "Aangevraagd",
   CONFIRMED: "Bevestigd",
@@ -33,15 +28,32 @@ const statusVariants: Record<string, "default" | "secondary" | "outline" | "dest
   COMPLETED: "secondary",
 };
 
+function formatDate(date: Date | null) {
+  if (!date) return "-";
+  return date.toLocaleDateString("nl-NL", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function daysAway(pickupDate: Date | null, returnDate: Date | null): string | null {
+  if (!pickupDate || !returnDate) return null;
+  const diff = Math.round((returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60 * 24));
+  return `${diff} dag${diff !== 1 ? "en" : ""}`;
+}
+
 function AppointmentTable({ appointments, emptyMessage }: {
   appointments: Array<{
     id: string;
-    requestedDate: Date;
+    pickupDate: Date | null;
+    returnDate: Date | null;
     type: string;
     status: string;
     notes: string | null;
     customer: { name: string };
-    vehicle: { licensePlate: string; type: string };
+    vehicle: { licensePlate: string; type: string; lengthInMeters: number };
   }>;
   emptyMessage: string;
 }) {
@@ -54,10 +66,11 @@ function AppointmentTable({ appointments, emptyMessage }: {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Datum</TableHead>
-            <TableHead>Type</TableHead>
             <TableHead>Klant</TableHead>
             <TableHead>Kenteken</TableHead>
+            <TableHead>Ophalen</TableHead>
+            <TableHead>Terugbrengen</TableHead>
+            <TableHead>Duur</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Notities</TableHead>
             <TableHead>Acties</TableHead>
@@ -66,18 +79,12 @@ function AppointmentTable({ appointments, emptyMessage }: {
         <TableBody>
           {appointments.map((apt) => (
             <TableRow key={apt.id}>
-              <TableCell>
-                {apt.requestedDate.toLocaleDateString("nl-NL", {
-                  weekday: "short",
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </TableCell>
-              <TableCell>{typeLabels[apt.type]}</TableCell>
               <TableCell>{apt.customer.name}</TableCell>
-              <TableCell className="font-mono">
-                {apt.vehicle.licensePlate}
+              <TableCell className="font-mono">{apt.vehicle.licensePlate}</TableCell>
+              <TableCell>{formatDate(apt.pickupDate)}</TableCell>
+              <TableCell>{formatDate(apt.returnDate)}</TableCell>
+              <TableCell className="text-muted-foreground text-sm">
+                {daysAway(apt.pickupDate, apt.returnDate) ?? "-"}
               </TableCell>
               <TableCell>
                 <Badge variant={statusVariants[apt.status]}>
@@ -107,9 +114,9 @@ export default async function AppointmentsPage() {
   const appointments = await prisma.appointment.findMany({
     include: {
       customer: { select: { name: true } },
-      vehicle: { select: { licensePlate: true, type: true } },
+      vehicle: { select: { licensePlate: true, type: true, lengthInMeters: true } },
     },
-    orderBy: { requestedDate: "asc" },
+    orderBy: { pickupDate: "asc" },
   });
 
   const pending = appointments.filter((a: typeof appointments[number]) => a.status === "REQUESTED");
@@ -145,7 +152,7 @@ export default async function AppointmentsPage() {
         </div>
       </div>
 
-      {/* Pending - needs attention */}
+      {/* Pending */}
       {pending.length > 0 && (
         <Card className="mb-6 border-orange-300">
           <CardHeader className="pb-2">
@@ -160,7 +167,7 @@ export default async function AppointmentsPage() {
         </Card>
       )}
 
-      {/* Confirmed - upcoming */}
+      {/* Confirmed */}
       <Card className="mb-6">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2">

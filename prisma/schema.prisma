@@ -215,7 +215,8 @@ model Appointment {
   customerId    String
   vehicleId     String
   type          AppointmentType
-  requestedDate DateTime
+  pickupDate    DateTime?
+  returnDate    DateTime?
   confirmedDate DateTime?
   status        AppointmentStatus @default(REQUESTED)
   notes         String?
@@ -228,7 +229,7 @@ model Appointment {
 
   @@index([customerId])
   @@index([vehicleId])
-  @@index([requestedDate])
+  @@index([pickupDate])
 }
 
 model PriceConfig {

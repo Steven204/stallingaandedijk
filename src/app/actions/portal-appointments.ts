@@ -9,33 +9,38 @@ export async function createAppointment(formData: FormData) {
   const session = await getSession();
 
   const vehicleId = formData.get("vehicleId") as string;
-  const type = formData.get("type") as "PICKUP" | "DROPOFF";
-  const requestedDate = new Date(formData.get("requestedDate") as string);
+  const pickupDate = new Date(formData.get("pickupDate") as string);
+  const returnDateStr = formData.get("returnDate") as string;
+  const returnDate = returnDateStr ? new Date(returnDateStr) : null;
   const notes = (formData.get("notes") as string) || undefined;
 
   // Check minimum 4 days in advance
   const minDate = new Date();
   minDate.setDate(minDate.getDate() + 4);
-  if (requestedDate < minDate) {
+  if (pickupDate < minDate) {
     throw new Error("Afspraak moet minimaal 4 dagen van tevoren worden gemaakt");
   }
 
-  // Check winter period for pickup requests
-  if (type === "PICKUP") {
-    const { closed, seasonName } = await isDateInClosedSeason(requestedDate);
-    if (closed) {
-      throw new Error(
-        `Ophalen is niet mogelijk tijdens de ${seasonName}. Kies een datum buiten deze periode.`
-      );
-    }
+  // Validate return date is after pickup date
+  if (returnDate && returnDate <= pickupDate) {
+    throw new Error("Terugbrengdatum moet na de ophaaldatum liggen");
+  }
+
+  // Check winter period for pickup
+  const { closed, seasonName } = await isDateInClosedSeason(pickupDate);
+  if (closed) {
+    throw new Error(
+      `Ophalen is niet mogelijk tijdens de ${seasonName}. Kies een datum buiten deze periode.`
+    );
   }
 
   await prisma.appointment.create({
     data: {
       customerId: session.user.id,
       vehicleId,
-      type,
-      requestedDate,
+      type: "PICKUP",
+      pickupDate,
+      returnDate,
       notes,
     },
   });

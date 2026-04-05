@@ -14,13 +14,21 @@ import {
 import { NewAppointmentForm } from "@/components/portal/new-appointment-form";
 import { getClosedSeasons } from "@/lib/seasons";
 
-const typeLabels: Record<string, string> = { PICKUP: "Ophalen", DROPOFF: "Wegbrengen" };
 const statusLabels: Record<string, string> = {
   REQUESTED: "Aangevraagd",
   CONFIRMED: "Bevestigd",
   REJECTED: "Afgewezen",
   COMPLETED: "Afgerond",
 };
+
+function formatDate(date: Date | null) {
+  if (!date) return "-";
+  return date.toLocaleDateString("nl-NL", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+}
 
 export default async function MyAppointmentsPage() {
   const session = await getSession();
@@ -29,7 +37,7 @@ export default async function MyAppointmentsPage() {
     prisma.appointment.findMany({
       where: { customerId: session.user.id },
       include: { vehicle: { select: { licensePlate: true } } },
-      orderBy: { requestedDate: "desc" },
+      orderBy: { pickupDate: "desc" },
     }),
     prisma.vehicle.findMany({
       where: { customerId: session.user.id },
@@ -55,31 +63,33 @@ export default async function MyAppointmentsPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Datum</TableHead>
-              <TableHead>Type</TableHead>
               <TableHead>Kenteken</TableHead>
+              <TableHead>Ophalen</TableHead>
+              <TableHead>Terugbrengen</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {appointments.map((apt: typeof appointments[number]) => (
-              <TableRow key={apt.id}>
-                <TableCell>
-                  {apt.requestedDate.toLocaleDateString("nl-NL", {
-                    weekday: "short",
-                    day: "numeric",
-                    month: "short",
-                  })}
-                </TableCell>
-                <TableCell>{typeLabels[apt.type]}</TableCell>
-                <TableCell className="font-mono">
-                  {apt.vehicle.licensePlate}
-                </TableCell>
-                <TableCell>
-                  <Badge>{statusLabels[apt.status]}</Badge>
+            {appointments.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                  Nog geen afspraken
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              appointments.map((apt: typeof appointments[number]) => (
+                <TableRow key={apt.id}>
+                  <TableCell className="font-mono">
+                    {apt.vehicle.licensePlate}
+                  </TableCell>
+                  <TableCell>{formatDate(apt.pickupDate)}</TableCell>
+                  <TableCell>{formatDate(apt.returnDate)}</TableCell>
+                  <TableCell>
+                    <Badge>{statusLabels[apt.status]}</Badge>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
