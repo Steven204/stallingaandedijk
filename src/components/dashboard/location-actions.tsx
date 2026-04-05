@@ -18,14 +18,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { createBulkLocations } from "@/app/actions/locations";
+import { createBulkLocations, addLocationToSection } from "@/app/actions/locations";
 import { Plus } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export function LocationActions() {
+interface LocationActionsProps {
+  sections: string[];
+}
+
+export function LocationActions({ sections }: LocationActionsProps) {
   const [open, setOpen] = useState(false);
 
-  async function handleSubmit(formData: FormData) {
+  async function handleBulkSubmit(formData: FormData) {
     await createBulkLocations(formData);
+    setOpen(false);
+  }
+
+  async function handleSingleSubmit(formData: FormData) {
+    await addLocationToSection(formData);
     setOpen(false);
   }
 
@@ -33,41 +43,89 @@ export function LocationActions() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={<Button />}>
         <Plus className="mr-2 h-4 w-4" />
-        Locaties toevoegen
+        Locatie toevoegen
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Locaties in bulk aanmaken</DialogTitle>
+          <DialogTitle>Locatie toevoegen</DialogTitle>
         </DialogHeader>
-        <form action={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="section">Sectie</Label>
-            <Input id="section" name="section" placeholder="bijv. A, B, C" required />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="prefix">Prefix</Label>
-            <Input id="prefix" name="prefix" placeholder="bijv. A" required />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="count">Aantal plekken</Label>
-            <Input id="count" name="count" type="number" min="1" max="50" defaultValue="10" required />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="isIndoor">Locatietype</Label>
-            <Select name="isIndoor" defaultValue="true">
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="true">Binnen (kas)</SelectItem>
-                <SelectItem value="false">Buiten (terrein)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <Button type="submit" className="w-full">
-            Aanmaken
-          </Button>
-        </form>
+        <Tabs defaultValue="single">
+          <TabsList className="w-full">
+            <TabsTrigger value="single" className="flex-1">Enkele locatie</TabsTrigger>
+            <TabsTrigger value="bulk" className="flex-1">Nieuwe sectie</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="single">
+            <form action={handleSingleSubmit} className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <Label>Sectie</Label>
+                {sections.length > 0 ? (
+                  <Select name="section" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Kies sectie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {sections.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          Sectie {s}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input name="section" placeholder="bijv. A" required />
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label>Code</Label>
+                <Input name="code" placeholder="bijv. A11" required className="uppercase font-mono" />
+              </div>
+              <div className="space-y-2">
+                <Label>Type</Label>
+                <Select name="isIndoor" defaultValue="true">
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Binnen (kas)</SelectItem>
+                    <SelectItem value="false">Buiten (terrein)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button type="submit" className="w-full">Toevoegen</Button>
+            </form>
+          </TabsContent>
+
+          <TabsContent value="bulk">
+            <form action={handleBulkSubmit} className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <Label>Sectienaam</Label>
+                <Input name="section" placeholder="bijv. D" required />
+              </div>
+              <div className="space-y-2">
+                <Label>Prefix (voor nummering)</Label>
+                <Input name="prefix" placeholder="bijv. D" required className="uppercase font-mono" />
+              </div>
+              <div className="space-y-2">
+                <Label>Aantal plekken</Label>
+                <Input name="count" type="number" min="1" max="50" defaultValue="10" required />
+              </div>
+              <div className="space-y-2">
+                <Label>Type</Label>
+                <Select name="isIndoor" defaultValue="true">
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Binnen (kas)</SelectItem>
+                    <SelectItem value="false">Buiten (terrein)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button type="submit" className="w-full">Sectie aanmaken</Button>
+            </form>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

@@ -3,37 +3,6 @@
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth-utils";
 import { revalidatePath } from "next/cache";
-import * as z from "zod";
-
-const locationSchema = z.object({
-  code: z.string().min(1, { error: "Code is verplicht" }),
-  label: z.string().min(1, { error: "Label is verplicht" }),
-  section: z.string().optional(),
-  isIndoor: z.boolean(),
-});
-
-export async function createLocation(formData: FormData) {
-  await requireRole("ADMIN");
-
-  const data = locationSchema.parse({
-    code: formData.get("code"),
-    label: formData.get("label"),
-    section: formData.get("section") || undefined,
-    isIndoor: formData.get("isIndoor") === "true",
-  });
-
-  await prisma.storageLocation.create({ data });
-
-  revalidatePath("/dashboard/locations");
-}
-
-export async function deleteLocation(id: string) {
-  await requireRole("ADMIN");
-
-  await prisma.storageLocation.delete({ where: { id } });
-
-  revalidatePath("/dashboard/locations");
-}
 
 export async function createBulkLocations(formData: FormData) {
   await requireRole("ADMIN");
@@ -57,6 +26,106 @@ export async function createBulkLocations(formData: FormData) {
   await prisma.storageLocation.createMany({
     data: locations,
     skipDuplicates: true,
+  });
+
+  revalidatePath("/dashboard/locations");
+}
+
+export async function addLocationToSection(formData: FormData) {
+  await requireRole("ADMIN");
+
+  const code = formData.get("code") as string;
+  const section = formData.get("section") as string;
+  const isIndoor = formData.get("isIndoor") === "true";
+
+  await prisma.storageLocation.create({
+    data: {
+      code: code.toUpperCase().trim(),
+      label: `Plek ${code.toUpperCase().trim()}`,
+      section,
+      isIndoor,
+    },
+  });
+
+  revalidatePath("/dashboard/locations");
+}
+
+export async function updateLocation(id: string, formData: FormData) {
+  await requireRole("ADMIN");
+
+  const code = formData.get("code") as string;
+  const section = formData.get("section") as string;
+  const isIndoor = formData.get("isIndoor") === "true";
+
+  await prisma.storageLocation.update({
+    where: { id },
+    data: {
+      code: code.toUpperCase().trim(),
+      label: `Plek ${code.toUpperCase().trim()}`,
+      section,
+      isIndoor,
+    },
+  });
+
+  revalidatePath("/dashboard/locations");
+}
+
+export async function deleteLocation(id: string) {
+  await requireRole("ADMIN");
+
+  // Check if location has active placements
+  const activePlacements = await prisma.vehiclePlacement.count({
+    where: { locationId: id, removedAt: null },
+  });
+
+  if (activePlacements > 0) {
+    throw new Error("Kan locatie niet verwijderen: er staat een voertuig op deze plek");
+  }
+
+  await prisma.storageLocation.delete({ where: { id } });
+
+  revalidatePath("/dashboard/locations");
+}
+
+export async function renameSection(oldName: string, newName: string) {
+  await requireRole("ADMIN");
+
+  await prisma.storageLocation.updateMany({
+    where: { section: oldName },
+    data: { section: newName },
+  });
+
+  revalidatePath("/dashboard/locations");
+}
+
+export async function deleteSection(sectionName: string) {
+  await requireRole("ADMIN");
+
+  // Check if any location in this section has active placements
+  const activePlacements = await prisma.vehiclePlacement.count({
+    where: {
+      location: { section: sectionName },
+      removedAt: null,
+    },
+  });
+
+  if (activePlacements > 0) {
+    throw new Error("Kan sectie niet verwijderen: er staan nog voertuigen in deze sectie");
+  }
+
+  await prisma.storageLocation.deleteMany({
+    where: { section: sectionName },
+  });
+
+  revalidatePath("/dashboard/locations");
+}
+
+export async function updateLocationIndoor(id: string, isIndoor: boolean) {
+  await requireRole("ADMIN");
+
+  await prisma.storageLocation.update({
+    where: { id },
+    data: { isIndoor },
   });
 
   revalidatePath("/dashboard/locations");
