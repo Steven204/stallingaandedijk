@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +5,266 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// ──────────────────────────────────────
+// Enums
+// ──────────────────────────────────────
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+  CUSTOMER
+}
+
+enum VehicleType {
+  CARAVAN
+  CAMPER
+  BOAT
+  OLDTIMER
+  CAR
+}
+
+enum VehicleStatus {
+  STORED
+  RETRIEVED
+  IN_TRANSIT
+}
+
+enum ContractStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+enum AppointmentType {
+  PICKUP
+  DROPOFF
+}
+
+enum AppointmentStatus {
+  REQUESTED
+  CONFIRMED
+  REJECTED
+  COMPLETED
+}
+
+enum MaintenanceType {
+  APK
+  BATTERY
+  TIRES
+  GENERAL
+  OTHER
+}
+
+enum MaintenanceStatus {
+  REQUESTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// ──────────────────────────────────────
+// Models
+// ──────────────────────────────────────
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  hashedPassword String
+  name           String
+  phone          String?
+  address        String?
+  city           String?
+  postalCode     String?
+  role           Role     @default(CUSTOMER)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  vehicles            Vehicle[]
+  contracts           Contract[]
+  invoices            Invoice[]
+  appointments        Appointment[]
+  storagePhotos       StoragePhoto[]       @relation("PhotoTakenBy")
+  vehiclePlacements   VehiclePlacement[]   @relation("PlacedBy")
+  maintenanceRequests MaintenanceRequest[]
+}
+
+model Vehicle {
+  id             String        @id @default(cuid())
+  customerId     String
+  type           VehicleType
+  licensePlate   String        @unique
+  brand          String?
+  model          String?
+  lengthInMeters Float
+  status         VehicleStatus @default(STORED)
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // Relations
+  customer            User                 @relation(fields: [customerId], references: [id])
+  placements          VehiclePlacement[]
+  photos              StoragePhoto[]
+  contracts           Contract[]
+  appointments        Appointment[]
+  maintenanceRequests MaintenanceRequest[]
+
+  @@index([customerId])
+  @@index([licensePlate])
+}
+
+model StorageLocation {
+  id         String   @id @default(cuid())
+  code       String   @unique
+  label      String
+  section    String?
+  isOccupied Boolean  @default(false)
+  isIndoor   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  // Relations
+  placements VehiclePlacement[]
+  photos     StoragePhoto[]
+}
+
+model StoragePhoto {
+  id         String   @id @default(cuid())
+  vehicleId  String
+  locationId String
+  photoUrl   String
+  takenAt    DateTime @default(now())
+  takenById  String
+
+  // Relations
+  vehicle  Vehicle         @relation(fields: [vehicleId], references: [id])
+  location StorageLocation @relation(fields: [locationId], references: [id])
+  takenBy  User            @relation("PhotoTakenBy", fields: [takenById], references: [id])
+
+  @@index([vehicleId])
+  @@index([locationId])
+}
+
+model VehiclePlacement {
+  id         String    @id @default(cuid())
+  vehicleId  String
+  locationId String
+  placedAt   DateTime  @default(now())
+  removedAt  DateTime?
+  placedById String
+
+  // Relations
+  vehicle  Vehicle         @relation(fields: [vehicleId], references: [id])
+  location StorageLocation @relation(fields: [locationId], references: [id])
+  placedBy User            @relation("PlacedBy", fields: [placedById], references: [id])
+
+  @@index([vehicleId])
+  @@index([locationId])
+}
+
+model Contract {
+  id            String         @id @default(cuid())
+  customerId    String
+  vehicleId     String
+  startDate     DateTime
+  endDate       DateTime
+  autoRenew     Boolean        @default(true)
+  pricePerMeter Float
+  totalPrice    Float
+  status        ContractStatus @default(ACTIVE)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relations
+  customer User      @relation(fields: [customerId], references: [id])
+  vehicle  Vehicle   @relation(fields: [vehicleId], references: [id])
+  invoices Invoice[]
+
+  @@index([customerId])
+  @@index([vehicleId])
+}
+
+model Invoice {
+  id         String        @id @default(cuid())
+  contractId String
+  customerId String
+  amount     Float
+  dueDate    DateTime
+  paidAt     DateTime?
+  status     InvoiceStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+
+  // Relations
+  contract Contract @relation(fields: [contractId], references: [id])
+  customer User     @relation(fields: [customerId], references: [id])
+
+  @@index([customerId])
+  @@index([contractId])
+}
+
+model Appointment {
+  id            String            @id @default(cuid())
+  customerId    String
+  vehicleId     String
+  type          AppointmentType
+  requestedDate DateTime
+  confirmedDate DateTime?
+  status        AppointmentStatus @default(REQUESTED)
+  notes         String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  // Relations
+  customer User    @relation(fields: [customerId], references: [id])
+  vehicle  Vehicle @relation(fields: [vehicleId], references: [id])
+
+  @@index([customerId])
+  @@index([vehicleId])
+  @@index([requestedDate])
+}
+
+model PriceConfig {
+  id            String      @id @default(cuid())
+  vehicleType   VehicleType
+  pricePerMeter Float
+  effectiveFrom DateTime    @default(now())
+
+  @@index([vehicleType])
+}
+
+model SeasonConfig {
+  id                String  @id @default(cuid())
+  name              String
+  startMonth        Int
+  startDay          Int
+  endMonth          Int
+  endDay            Int
+  isClosedForPickup Boolean @default(false)
+}
+
+model MaintenanceRequest {
+  id          String            @id @default(cuid())
+  vehicleId   String
+  customerId  String
+  type        MaintenanceType
+  description String?
+  status      MaintenanceStatus @default(REQUESTED)
+  notes       String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // Relations
+  vehicle  Vehicle @relation(fields: [vehicleId], references: [id])
+  customer User    @relation(fields: [customerId], references: [id])
+
+  @@index([vehicleId])
+  @@index([customerId])
 }
