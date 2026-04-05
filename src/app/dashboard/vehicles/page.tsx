@@ -40,7 +40,7 @@ export default async function VehiclesPage() {
   const vehicles = await prisma.vehicle.findMany({
     where: { isApproved: true },
     include: {
-      customer: { select: { name: true } },
+      customer: { select: { id: true, name: true } },
       placements: {
         where: { removedAt: null },
         include: { location: true },
@@ -99,7 +99,11 @@ export default async function VehiclesPage() {
                   <TableCell>
                     {[vehicle.brand, vehicle.model].filter(Boolean).join(" ") || "-"}
                   </TableCell>
-                  <TableCell>{vehicle.customer.name}</TableCell>
+                  <TableCell>
+                    <Link href={`/dashboard/customers/${vehicle.customer.id}`} className="font-medium hover:underline">
+                      {vehicle.customer.name}
+                    </Link>
+                  </TableCell>
                   <TableCell>{vehicle.lengthInMeters}</TableCell>
                   <TableCell>
                     {vehicle.placements[0]?.location.code ?? "-"}
