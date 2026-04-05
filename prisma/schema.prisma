@@ -173,6 +173,7 @@ model VehiclePlacement {
 
 model Contract {
   id            String         @id @default(cuid())
+  contractNumber Int           @unique @default(autoincrement())
   customerId    String
   vehicleId     String
   startDate     DateTime

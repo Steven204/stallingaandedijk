@@ -82,9 +82,8 @@ export default async function ContractDetailPage({
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <FileText className="h-6 w-6" />
-            Contract
+            Contract #{String(contract.contractNumber).padStart(5, "0")}
           </h1>
-          <p className="text-sm text-muted-foreground font-mono">{contract.id}</p>
         </div>
         <Badge variant={statusVariants[contract.status]} className="text-sm px-3 py-1">
           {statusLabels[contract.status]}

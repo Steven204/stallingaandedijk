@@ -53,6 +53,7 @@ export default async function ContractsPage() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Contract</TableHead>
               <TableHead>Klant</TableHead>
               <TableHead>Kenteken</TableHead>
               <TableHead>Periode</TableHead>
@@ -65,7 +66,7 @@ export default async function ContractsPage() {
           <TableBody>
             {contracts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                   Nog geen contracten
                 </TableCell>
               </TableRow>
@@ -73,14 +74,17 @@ export default async function ContractsPage() {
               contracts.map((contract: typeof contracts[number]) => (
                 <TableRow key={contract.id}>
                   <TableCell>
+                    <Link href={`/dashboard/contracts/${contract.id}`} className="font-mono font-medium hover:underline text-primary">
+                      {String(contract.contractNumber).padStart(5, "0")}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
                     <Link href={`/dashboard/customers/${contract.customer.id}`} className="font-medium hover:underline">
                       {contract.customer.name}
                     </Link>
                   </TableCell>
-                  <TableCell>
-                    <Link href={`/dashboard/contracts/${contract.id}`} className="font-mono font-medium hover:underline">
-                      {contract.vehicle.licensePlate}
-                    </Link>
+                  <TableCell className="font-mono">
+                    {contract.vehicle.licensePlate}
                   </TableCell>
                   <TableCell>
                     {contract.startDate.toLocaleDateString("nl-NL")} -{" "}
