@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth-utils";
 import { ContractForm } from "@/components/forms/contract-form";

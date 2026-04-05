@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth-utils";
 import { Badge } from "@/components/ui/badge";
