@@ -15,19 +15,19 @@ export default async function PortalLayout({
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div>
-            <h1 className="font-bold">Stalling aan de Dijk</h1>
+          <Link href="/portal">
+            <h1 className="font-bold hover:text-primary transition-colors">Stalling aan de Dijk</h1>
             <p className="text-xs text-muted-foreground">
               Welkom, {session.user.name}
             </p>
-          </div>
+          </Link>
           <PortalLogout />
         </div>
         <nav className="max-w-4xl mx-auto px-4 pb-2 flex gap-2 overflow-x-auto">
-          <Link href="/portal">
+          <Link href="/">
             <Button variant="ghost" size="sm">
               <Home className="mr-1 h-4 w-4" />
-              Dashboard
+              Home
             </Button>
           </Link>
           <Link href="/portal/my-vehicles">
