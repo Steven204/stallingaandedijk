@@ -19,8 +19,8 @@ const statusLabels: Record<string, string> = {
   OVERDUE: "Achterstallig",
 };
 
-const statusVariants: Record<string, "default" | "secondary" | "destructive"> = {
-  PENDING: "outline" as "default",
+const statusVariants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+  PENDING: "outline",
   PAID: "default",
   OVERDUE: "destructive",
 };
@@ -32,7 +32,9 @@ export default async function InvoicesPage() {
     include: {
       customer: { select: { id: true, name: true } },
       contract: {
-        include: {
+        select: {
+          id: true,
+          contractNumber: true,
           vehicle: { select: { licensePlate: true } },
         },
       },
@@ -48,6 +50,8 @@ export default async function InvoicesPage() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Factuur</TableHead>
+              <TableHead>Contract</TableHead>
               <TableHead>Klant</TableHead>
               <TableHead>Kenteken</TableHead>
               <TableHead>Bedrag</TableHead>
@@ -60,13 +64,23 @@ export default async function InvoicesPage() {
           <TableBody>
             {invoices.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                   Geen facturen
                 </TableCell>
               </TableRow>
             ) : (
               invoices.map((invoice: typeof invoices[number]) => (
                 <TableRow key={invoice.id}>
+                  <TableCell>
+                    <Link href={`/dashboard/invoices/${invoice.id}`} className="font-mono font-medium hover:underline text-primary">
+                      {String(invoice.invoiceNumber).padStart(5, "0")}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <Link href={`/dashboard/contracts/${invoice.contract.id}`} className="font-mono text-sm hover:underline">
+                      #{String(invoice.contract.contractNumber).padStart(5, "0")}
+                    </Link>
+                  </TableCell>
                   <TableCell>
                     <Link href={`/dashboard/customers/${invoice.customer.id}`} className="font-medium hover:underline">
                       {invoice.customer.name}
@@ -76,13 +90,9 @@ export default async function InvoicesPage() {
                     {invoice.contract.vehicle.licensePlate}
                   </TableCell>
                   <TableCell>&euro; {invoice.amount.toFixed(2)}</TableCell>
+                  <TableCell>{invoice.dueDate.toLocaleDateString("nl-NL")}</TableCell>
                   <TableCell>
-                    {invoice.dueDate.toLocaleDateString("nl-NL")}
-                  </TableCell>
-                  <TableCell>
-                    {invoice.paidAt
-                      ? invoice.paidAt.toLocaleDateString("nl-NL")
-                      : "-"}
+                    {invoice.paidAt ? invoice.paidAt.toLocaleDateString("nl-NL") : "-"}
                   </TableCell>
                   <TableCell>
                     <Badge variant={statusVariants[invoice.status]}>

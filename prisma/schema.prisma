@@ -195,9 +195,10 @@ model Contract {
 }
 
 model Invoice {
-  id         String        @id @default(cuid())
-  contractId String
-  customerId String
+  id            String        @id @default(cuid())
+  invoiceNumber Int           @unique @default(autoincrement())
+  contractId    String
+  customerId    String
   amount     Float
   dueDate    DateTime
   paidAt     DateTime?
