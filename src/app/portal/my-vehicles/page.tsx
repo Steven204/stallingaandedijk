@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { MaintenanceForm } from "@/components/portal/maintenance-form";
+import { AddVehicleForm } from "@/components/portal/add-vehicle-form";
 
 const vehicleTypeLabels: Record<string, string> = {
   CARAVAN: "Caravan",
@@ -41,7 +42,10 @@ export default async function MyVehiclesPage() {
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">Mijn voertuigen</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold">Mijn voertuigen</h2>
+        <AddVehicleForm />
+      </div>
       {vehicles.length === 0 ? (
         <Card>
           <CardContent className="pt-6 text-center">
