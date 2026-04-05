@@ -43,7 +43,20 @@ export default async function MyVehiclesPage() {
     <div>
       <h2 className="text-xl font-bold mb-4">Mijn voertuigen</h2>
       {vehicles.length === 0 ? (
-        <p className="text-muted-foreground">Nog geen voertuigen geregistreerd.</p>
+        <Card>
+          <CardContent className="pt-6 text-center">
+            <p className="text-lg font-medium mb-2">Geen voertuigen geregistreerd</p>
+            <p className="text-muted-foreground mb-4">
+              Er zijn nog geen voertuigen aan uw account gekoppeld.
+              Neem contact op met de beheerder om uw voertuig te registreren.
+            </p>
+            <div className="rounded-lg border bg-muted p-4 text-sm text-left">
+              <p className="font-medium mb-1">Contact beheerder:</p>
+              <p>Tel: 06 51 60 54 67</p>
+              <p>Email: stallingaandedijk@gmail.com</p>
+            </div>
+          </CardContent>
+        </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {vehicles.map((vehicle: typeof vehicles[number]) => (

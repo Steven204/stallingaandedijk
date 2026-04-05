@@ -55,7 +55,18 @@ export default async function MyAppointmentsPage() {
           <CardTitle>Nieuwe afspraak maken</CardTitle>
         </CardHeader>
         <CardContent>
-          <NewAppointmentForm vehicles={vehicles} closedSeasons={closedSeasons} />
+          {vehicles.length === 0 ? (
+            <div className="rounded-lg border border-orange-300 bg-orange-50 p-4 text-sm">
+              <p className="font-medium text-orange-800">Geen voertuigen geregistreerd</p>
+              <p className="text-orange-700 mt-1">
+                U heeft nog geen voertuig gekoppeld aan uw account.
+                Neem contact op met de beheerder of registreer een voertuig via{" "}
+                <a href="/portal/my-vehicles" className="underline font-medium">Mijn voertuigen</a>.
+              </p>
+            </div>
+          ) : (
+            <NewAppointmentForm vehicles={vehicles} closedSeasons={closedSeasons} />
+          )}
         </CardContent>
       </Card>
 
