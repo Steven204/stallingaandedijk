@@ -65,6 +65,7 @@ export async function registerCustomer(formData: FormData) {
       city: data.city,
       postalCode: data.postalCode,
       role: "CUSTOMER",
+      isApproved: false,
     },
   });
 

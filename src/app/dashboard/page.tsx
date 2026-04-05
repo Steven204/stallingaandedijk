@@ -3,16 +3,16 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth-utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Car, Users, MapPin, CalendarDays, QrCode } from "lucide-react";
+import { Car, Users, MapPin, CalendarDays, QrCode, UserPlus } from "lucide-react";
 import Link from "next/link";
 
 export default async function DashboardPage() {
   const session = await getSession();
 
-  const [vehicleCount, customerCount, locationStats, appointmentCount] =
+  const [vehicleCount, customerCount, locationStats, appointmentCount, pendingRegistrations] =
     await Promise.all([
       prisma.vehicle.count({ where: { status: "STORED" } }),
-      prisma.user.count({ where: { role: "CUSTOMER" } }),
+      prisma.user.count({ where: { role: "CUSTOMER", isApproved: true } }),
       prisma.storageLocation.groupBy({
         by: ["isOccupied"],
         _count: true,
@@ -22,6 +22,7 @@ export default async function DashboardPage() {
           status: { in: ["REQUESTED", "CONFIRMED"] },
         },
       }),
+      prisma.user.count({ where: { role: "CUSTOMER", isApproved: false } }),
     ]);
 
   const totalLocations = locationStats.reduce((sum: number, g: typeof locationStats[number]) => sum + g._count, 0);
@@ -49,6 +50,15 @@ export default async function DashboardPage() {
       value: appointmentCount,
       icon: CalendarDays,
     },
+    ...(pendingRegistrations > 0
+      ? [
+          {
+            title: "Nieuwe aanmeldingen",
+            value: pendingRegistrations,
+            icon: UserPlus,
+          },
+        ]
+      : []),
   ];
 
   return (

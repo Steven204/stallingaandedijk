@@ -35,7 +35,11 @@ export default function LoginPage() {
     setLoading(false);
 
     if (result?.error) {
-      setError("Ongeldige e-mail of wachtwoord");
+      if (result.error.includes("PENDING_APPROVAL") || result.code === "PENDING_APPROVAL") {
+        setError("Uw account wacht nog op goedkeuring door de beheerder. U ontvangt bericht zodra uw account is geactiveerd.");
+      } else {
+        setError("Ongeldige e-mail of wachtwoord");
+      }
     } else {
       // Haal de juiste redirect op basis van rol
       const res = await fetch("/api/auth/redirect");

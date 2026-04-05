@@ -30,6 +30,7 @@ import {
   Settings,
   QrCode,
   ScanLine,
+  UserPlus,
   Wrench,
   LogOut,
   ChevronUp,
@@ -77,6 +78,7 @@ const menuSections: MenuSection[] = [
   {
     label: "Klanten",
     items: [
+      { title: "Aanmeldingen", href: "/dashboard/registrations", icon: UserPlus, roles: ["ADMIN"] },
       { title: "Klanten", href: "/dashboard/customers", icon: Users, roles: ["ADMIN"] },
       { title: "Afspraken", href: "/dashboard/appointments", icon: CalendarDays, roles: ["ADMIN", "EMPLOYEE"] },
     ],
