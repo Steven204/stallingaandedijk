@@ -47,80 +47,64 @@ interface AppSidebarProps {
   };
 }
 
-const menuItems = [
+interface MenuItem {
+  title: string;
+  href: string;
+  icon: typeof Home;
+  roles: Role[];
+}
+
+interface MenuSection {
+  label: string;
+  items: MenuItem[];
+}
+
+const menuSections: MenuSection[] = [
   {
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: Home,
-    roles: ["ADMIN", "EMPLOYEE"] as Role[],
+    label: "Overzicht",
+    items: [
+      { title: "Dashboard", href: "/dashboard", icon: Home, roles: ["ADMIN", "EMPLOYEE"] },
+    ],
   },
   {
-    title: "Voertuig inchecken",
-    href: "/checkin",
-    icon: ScanLine,
-    roles: ["ADMIN", "EMPLOYEE"] as Role[],
+    label: "Inchecken",
+    items: [
+      { title: "Voertuig inchecken", href: "/checkin", icon: ScanLine, roles: ["ADMIN", "EMPLOYEE"] },
+      { title: "Locaties", href: "/dashboard/locations", icon: MapPin, roles: ["ADMIN", "EMPLOYEE"] },
+      { title: "QR Codes", href: "/dashboard/qr-codes", icon: QrCode, roles: ["ADMIN", "EMPLOYEE"] },
+    ],
   },
   {
-    title: "Klanten",
-    href: "/dashboard/customers",
-    icon: Users,
-    roles: ["ADMIN"] as Role[],
+    label: "Klanten",
+    items: [
+      { title: "Klanten", href: "/dashboard/customers", icon: Users, roles: ["ADMIN"] },
+      { title: "Afspraken", href: "/dashboard/appointments", icon: CalendarDays, roles: ["ADMIN", "EMPLOYEE"] },
+    ],
   },
   {
-    title: "Voertuigen",
-    href: "/dashboard/vehicles",
-    icon: Car,
-    roles: ["ADMIN", "EMPLOYEE"] as Role[],
+    label: "Voertuigen",
+    items: [
+      { title: "Voertuigen", href: "/dashboard/vehicles", icon: Car, roles: ["ADMIN", "EMPLOYEE"] },
+      { title: "Onderhoud", href: "/dashboard/maintenance", icon: Wrench, roles: ["ADMIN", "EMPLOYEE"] },
+    ],
   },
   {
-    title: "Locaties",
-    href: "/dashboard/locations",
-    icon: MapPin,
-    roles: ["ADMIN", "EMPLOYEE"] as Role[],
+    label: "Contracten & Financieel",
+    items: [
+      { title: "Contracten", href: "/dashboard/contracts", icon: FileText, roles: ["ADMIN"] },
+      { title: "Facturen", href: "/dashboard/invoices", icon: Receipt, roles: ["ADMIN"] },
+    ],
   },
   {
-    title: "Afspraken",
-    href: "/dashboard/appointments",
-    icon: CalendarDays,
-    roles: ["ADMIN", "EMPLOYEE"] as Role[],
-  },
-  {
-    title: "Contracten",
-    href: "/dashboard/contracts",
-    icon: FileText,
-    roles: ["ADMIN"] as Role[],
-  },
-  {
-    title: "Facturen",
-    href: "/dashboard/invoices",
-    icon: Receipt,
-    roles: ["ADMIN"] as Role[],
-  },
-  {
-    title: "Onderhoud",
-    href: "/dashboard/maintenance",
-    icon: Wrench,
-    roles: ["ADMIN", "EMPLOYEE"] as Role[],
-  },
-  {
-    title: "QR Codes",
-    href: "/dashboard/qr-codes",
-    icon: QrCode,
-    roles: ["ADMIN", "EMPLOYEE"] as Role[],
-  },
-  {
-    title: "Instellingen",
-    href: "/dashboard/settings",
-    icon: Settings,
-    roles: ["ADMIN"] as Role[],
+    label: "Beheer",
+    items: [
+      { title: "Instellingen", href: "/dashboard/settings", icon: Settings, roles: ["ADMIN"] },
+    ],
   },
 ];
 
 export function AppSidebar({ user }: AppSidebarProps) {
   const pathname = usePathname();
-  const visibleItems = menuItems.filter((item) =>
-    item.roles.includes(user.role)
-  );
   const initials = user.name
     .split(" ")
     .map((n) => n[0])
@@ -142,28 +126,37 @@ export function AppSidebar({ user }: AppSidebarProps) {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Navigatie</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {visibleItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton
-                    render={<Link href={item.href} />}
-                    isActive={
-                      pathname === item.href ||
-                      (item.href !== "/dashboard" &&
-                        pathname.startsWith(item.href))
-                    }
-                  >
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {menuSections.map((section) => {
+          const visibleItems = section.items.filter((item) =>
+            item.roles.includes(user.role)
+          );
+          if (visibleItems.length === 0) return null;
+
+          return (
+            <SidebarGroup key={section.label}>
+              <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {visibleItems.map((item) => (
+                    <SidebarMenuItem key={item.href}>
+                      <SidebarMenuButton
+                        render={<Link href={item.href} />}
+                        isActive={
+                          pathname === item.href ||
+                          (item.href !== "/dashboard" &&
+                            pathname.startsWith(item.href))
+                        }
+                      >
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          );
+        })}
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
