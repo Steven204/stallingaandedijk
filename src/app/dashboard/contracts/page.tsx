@@ -77,8 +77,10 @@ export default async function ContractsPage() {
                       {contract.customer.name}
                     </Link>
                   </TableCell>
-                  <TableCell className="font-mono">
-                    {contract.vehicle.licensePlate}
+                  <TableCell>
+                    <Link href={`/dashboard/contracts/${contract.id}`} className="font-mono font-medium hover:underline">
+                      {contract.vehicle.licensePlate}
+                    </Link>
                   </TableCell>
                   <TableCell>
                     {contract.startDate.toLocaleDateString("nl-NL")} -{" "}
