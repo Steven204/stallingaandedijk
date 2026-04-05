@@ -31,7 +31,7 @@ export default async function ContractsPage() {
 
   const contracts = await prisma.contract.findMany({
     include: {
-      customer: { select: { name: true } },
+      customer: { select: { id: true, name: true } },
       vehicle: { select: { licensePlate: true, type: true, lengthInMeters: true } },
     },
     orderBy: { startDate: "desc" },
@@ -72,7 +72,11 @@ export default async function ContractsPage() {
             ) : (
               contracts.map((contract: typeof contracts[number]) => (
                 <TableRow key={contract.id}>
-                  <TableCell>{contract.customer.name}</TableCell>
+                  <TableCell>
+                    <Link href={`/dashboard/customers/${contract.customer.id}`} className="font-medium hover:underline">
+                      {contract.customer.name}
+                    </Link>
+                  </TableCell>
                   <TableCell className="font-mono">
                     {contract.vehicle.licensePlate}
                   </TableCell>

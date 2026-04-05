@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AppointmentActions } from "@/components/dashboard/appointment-actions";
+import Link from "next/link";
 import { AlertCircle, CalendarDays, CheckCircle2, Clock } from "lucide-react";
 
 const statusLabels: Record<string, string> = {
@@ -52,7 +53,7 @@ function AppointmentTable({ appointments, emptyMessage }: {
     type: string;
     status: string;
     notes: string | null;
-    customer: { name: string };
+    customer: { id: string; name: string };
     vehicle: { licensePlate: string; type: string; lengthInMeters: number };
   }>;
   emptyMessage: string;
@@ -79,7 +80,11 @@ function AppointmentTable({ appointments, emptyMessage }: {
         <TableBody>
           {appointments.map((apt) => (
             <TableRow key={apt.id}>
-              <TableCell>{apt.customer.name}</TableCell>
+              <TableCell>
+                <Link href={`/dashboard/customers/${apt.customer.id}`} className="font-medium hover:underline">
+                  {apt.customer.name}
+                </Link>
+              </TableCell>
               <TableCell className="font-mono">{apt.vehicle.licensePlate}</TableCell>
               <TableCell>{formatDate(apt.pickupDate)}</TableCell>
               <TableCell>{formatDate(apt.returnDate)}</TableCell>
@@ -113,7 +118,7 @@ export default async function AppointmentsPage() {
 
   const appointments = await prisma.appointment.findMany({
     include: {
-      customer: { select: { name: true } },
+      customer: { select: { id: true, name: true } },
       vehicle: { select: { licensePlate: true, type: true, lengthInMeters: true } },
     },
     orderBy: { pickupDate: "asc" },

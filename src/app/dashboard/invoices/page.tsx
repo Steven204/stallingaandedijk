@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth-utils";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -29,7 +30,7 @@ export default async function InvoicesPage() {
 
   const invoices = await prisma.invoice.findMany({
     include: {
-      customer: { select: { name: true } },
+      customer: { select: { id: true, name: true } },
       contract: {
         include: {
           vehicle: { select: { licensePlate: true } },
@@ -66,7 +67,11 @@ export default async function InvoicesPage() {
             ) : (
               invoices.map((invoice: typeof invoices[number]) => (
                 <TableRow key={invoice.id}>
-                  <TableCell>{invoice.customer.name}</TableCell>
+                  <TableCell>
+                    <Link href={`/dashboard/customers/${invoice.customer.id}`} className="font-medium hover:underline">
+                      {invoice.customer.name}
+                    </Link>
+                  </TableCell>
                   <TableCell className="font-mono">
                     {invoice.contract.vehicle.licensePlate}
                   </TableCell>
