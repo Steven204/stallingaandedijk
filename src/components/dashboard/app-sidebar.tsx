@@ -29,6 +29,7 @@ import {
   Receipt,
   Settings,
   QrCode,
+  ScanLine,
   Wrench,
   LogOut,
   ChevronUp,
@@ -51,6 +52,12 @@ const menuItems = [
     title: "Dashboard",
     href: "/dashboard",
     icon: Home,
+    roles: ["ADMIN", "EMPLOYEE"] as Role[],
+  },
+  {
+    title: "Voertuig inchecken",
+    href: "/checkin",
+    icon: ScanLine,
     roles: ["ADMIN", "EMPLOYEE"] as Role[],
   },
   {
