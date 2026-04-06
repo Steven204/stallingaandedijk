@@ -14,9 +14,6 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
             <Link href="/prijzen">
               <Button variant="ghost" size="sm">Prijzen</Button>
             </Link>
-            <Link href="/aanmelden">
-              <Button variant="ghost" size="sm">Aanmelden</Button>
-            </Link>
             <Link href="/faq">
               <Button variant="ghost" size="sm">FAQ</Button>
             </Link>

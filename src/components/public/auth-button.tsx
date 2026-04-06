@@ -1,8 +1,9 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { LogOut } from "lucide-react";
 
 export function AuthButton() {
   const { data: session, status } = useSession();
@@ -15,15 +16,29 @@ export function AuthButton() {
     const role = (session.user as { role?: string }).role;
     const href = role === "CUSTOMER" ? "/portal" : "/dashboard";
     return (
-      <Link href={href}>
-        <Button size="sm">Mijn omgeving</Button>
-      </Link>
+      <div className="flex items-center gap-1">
+        <Link href={href}>
+          <Button size="sm">Mijn omgeving</Button>
+        </Link>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => signOut({ callbackUrl: "/" })}
+        >
+          <LogOut className="h-4 w-4" />
+        </Button>
+      </div>
     );
   }
 
   return (
-    <Link href="/login">
-      <Button size="sm">Inloggen</Button>
-    </Link>
+    <>
+      <Link href="/aanmelden">
+        <Button variant="ghost" size="sm">Aanmelden</Button>
+      </Link>
+      <Link href="/login">
+        <Button size="sm">Inloggen</Button>
+      </Link>
+    </>
   );
 }
