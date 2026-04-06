@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth-utils";
 import Link from "next/link";
@@ -12,6 +13,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { InvoiceActions } from "@/components/dashboard/invoice-actions";
+import { getPaginationParams, PAGE_SIZE } from "@/lib/pagination";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 
 const statusLabels: Record<string, string> = {
   PENDING: "Openstaand",
@@ -25,22 +28,33 @@ const statusVariants: Record<string, "default" | "secondary" | "destructive" | "
   OVERDUE: "destructive",
 };
 
-export default async function InvoicesPage() {
+export default async function InvoicesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   await requireRole("ADMIN");
 
-  const invoices = await prisma.invoice.findMany({
-    include: {
-      customer: { select: { id: true, name: true } },
-      contract: {
-        select: {
-          id: true,
-          contractNumber: true,
-          vehicle: { select: { licensePlate: true } },
+  const { skip, take } = getPaginationParams(await searchParams);
+
+  const [invoices, count] = await Promise.all([
+    prisma.invoice.findMany({
+      include: {
+        customer: { select: { id: true, name: true } },
+        contract: {
+          select: {
+            id: true,
+            contractNumber: true,
+            vehicle: { select: { licensePlate: true } },
+          },
         },
       },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+    }),
+    prisma.invoice.count(),
+  ]);
 
   return (
     <div>
@@ -111,6 +125,10 @@ export default async function InvoicesPage() {
           </TableBody>
         </Table>
       </div>
+
+      <Suspense>
+        <PaginationControls totalCount={count} pageSize={PAGE_SIZE} />
+      </Suspense>
     </div>
   );
 }

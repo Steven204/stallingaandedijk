@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth-utils";
 import Link from "next/link";
@@ -13,6 +14,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus } from "lucide-react";
+import { getPaginationParams, PAGE_SIZE } from "@/lib/pagination";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 
 const statusLabels: Record<string, string> = {
   ACTIVE: "Actief",
@@ -26,17 +29,27 @@ const statusVariants: Record<string, "default" | "secondary" | "destructive"> = 
   CANCELLED: "destructive",
 };
 
-export default async function ContractsPage() {
+export default async function ContractsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   await requireRole("ADMIN");
 
-  const contracts = await prisma.contract.findMany({
-    include: {
-      customer: { select: { id: true, name: true } },
-      vehicle: { select: { licensePlate: true, type: true, lengthInMeters: true } },
-    },
-    orderBy: { startDate: "desc" },
-    take: 100,
-  });
+  const { skip, take } = getPaginationParams(await searchParams);
+
+  const [contracts, count] = await Promise.all([
+    prisma.contract.findMany({
+      include: {
+        customer: { select: { id: true, name: true } },
+        vehicle: { select: { licensePlate: true, type: true, lengthInMeters: true } },
+      },
+      orderBy: { startDate: "desc" },
+      skip,
+      take,
+    }),
+    prisma.contract.count(),
+  ]);
 
   return (
     <div>
@@ -105,6 +118,10 @@ export default async function ContractsPage() {
           </TableBody>
         </Table>
       </div>
+
+      <Suspense>
+        <PaginationControls totalCount={count} pageSize={PAGE_SIZE} />
+      </Suspense>
     </div>
   );
 }

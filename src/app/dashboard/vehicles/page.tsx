@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth-utils";
 import Link from "next/link";
@@ -13,6 +14,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus } from "lucide-react";
+import { getPaginationParams, PAGE_SIZE } from "@/lib/pagination";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 
 const vehicleTypeLabels: Record<string, string> = {
   CARAVAN: "Caravan",
@@ -34,21 +37,32 @@ const statusVariants: Record<string, "default" | "secondary" | "outline"> = {
   IN_TRANSIT: "outline",
 };
 
-export default async function VehiclesPage() {
+export default async function VehiclesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   const session = await getSession();
 
-  const vehicles = await prisma.vehicle.findMany({
-    where: { isApproved: true },
-    include: {
-      customer: { select: { id: true, name: true } },
-      placements: {
-        where: { removedAt: null },
-        include: { location: true },
-        take: 1,
+  const { skip, take } = getPaginationParams(await searchParams);
+
+  const [vehicles, count] = await Promise.all([
+    prisma.vehicle.findMany({
+      where: { isApproved: true },
+      include: {
+        customer: { select: { id: true, name: true } },
+        placements: {
+          where: { removedAt: null },
+          include: { location: true },
+          take: 1,
+        },
       },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+    }),
+    prisma.vehicle.count({ where: { isApproved: true } }),
+  ]);
 
   return (
     <div>
@@ -119,6 +133,10 @@ export default async function VehiclesPage() {
           </TableBody>
         </Table>
       </div>
+
+      <Suspense>
+        <PaginationControls totalCount={count} pageSize={PAGE_SIZE} />
+      </Suspense>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth-utils";
 import Link from "next/link";
@@ -13,17 +14,30 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus } from "lucide-react";
+import { getPaginationParams, PAGE_SIZE } from "@/lib/pagination";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 
-export default async function CustomersPage() {
+export default async function CustomersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   await requireRole("ADMIN");
 
-  const customers = await prisma.user.findMany({
-    where: { role: "CUSTOMER", isApproved: true },
-    include: {
-      _count: { select: { vehicles: true, contracts: true } },
-    },
-    orderBy: { name: "asc" },
-  });
+  const { skip, take } = getPaginationParams(await searchParams);
+
+  const [customers, count] = await Promise.all([
+    prisma.user.findMany({
+      where: { role: "CUSTOMER", isApproved: true },
+      include: {
+        _count: { select: { vehicles: true, contracts: true } },
+      },
+      orderBy: { name: "asc" },
+      skip,
+      take,
+    }),
+    prisma.user.count({ where: { role: "CUSTOMER", isApproved: true } }),
+  ]);
 
   return (
     <div>
@@ -86,6 +100,10 @@ export default async function CustomersPage() {
           </TableBody>
         </Table>
       </div>
+
+      <Suspense>
+        <PaginationControls totalCount={count} pageSize={PAGE_SIZE} />
+      </Suspense>
     </div>
   );
 }
