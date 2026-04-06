@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "file=\"$CLAUDE_TOOL_INPUT_FILE_PATH\"; if echo \"$file\" | grep -q 'schema.prisma'; then cd ~/projects/stalling-aan-de-dijk && npx prisma validate 2>&1 | tail -1; fi"
+          }
+        ]
+      }
+    ]
+  }
+}
