@@ -45,17 +45,25 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">
-          Welkom, {session.user.name}
-        </h1>
-        <Link href="/checkin">
-          <Button size="lg">
-            <QrCode className="mr-2 h-5 w-5" />
-            Voertuig inchecken
-          </Button>
-        </Link>
-      </div>
+      <h1 className="text-2xl font-bold mb-6">
+        Welkom, {session.user.name}
+      </h1>
+
+      {/* Quick action */}
+      <Link href="/checkin" className="block mb-6">
+        <Card className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer">
+          <CardContent className="flex items-center gap-4 py-5">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary-foreground/20">
+              <QrCode className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-lg font-bold">Voertuig inchecken</p>
+              <p className="text-sm opacity-80">Scan een QR-code of kies een locatie om een voertuig in te checken</p>
+            </div>
+            <ArrowRight className="ml-auto h-5 w-5 opacity-60" />
+          </CardContent>
+        </Card>
+      </Link>
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
