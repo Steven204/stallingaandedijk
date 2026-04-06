@@ -128,3 +128,67 @@
     @apply font-sans;
   }
 }
+
+/* Lovable Design System — Public pages only */
+.lovable {
+  --lovable-bg: #f7f4ed;
+  --lovable-fg: #1c1c1c;
+  --lovable-fg-muted: #5f5f5d;
+  --lovable-border: #eceae4;
+  --lovable-border-interactive: rgba(28, 28, 28, 0.4);
+  --lovable-surface: #fcfbf8;
+
+  background-color: var(--lovable-bg);
+  color: var(--lovable-fg);
+}
+
+.lovable .lovable-card {
+  background: var(--lovable-bg);
+  border: 1px solid var(--lovable-border);
+  border-radius: 12px;
+}
+
+.lovable .lovable-btn-primary {
+  background: var(--lovable-fg);
+  color: var(--lovable-surface);
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 400;
+  font-size: 16px;
+  box-shadow: rgba(255,255,255,0.2) 0px 0.5px 0px 0px inset,
+              rgba(0,0,0,0.2) 0px 0px 0px 0.5px inset,
+              rgba(0,0,0,0.05) 0px 1px 2px 0px;
+  transition: opacity 0.15s;
+}
+.lovable .lovable-btn-primary:hover {
+  opacity: 0.85;
+}
+
+.lovable .lovable-btn-ghost {
+  background: transparent;
+  color: var(--lovable-fg);
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--lovable-border-interactive);
+  font-weight: 400;
+  font-size: 14px;
+  transition: opacity 0.15s;
+}
+.lovable .lovable-btn-ghost:hover {
+  opacity: 0.75;
+}
+
+.lovable .lovable-heading {
+  font-weight: 600;
+  letter-spacing: -0.9px;
+  line-height: 1.1;
+  color: var(--lovable-fg);
+}
+
+.lovable .lovable-text-muted {
+  color: var(--lovable-fg-muted);
+}
+
+.lovable .lovable-divider {
+  border-color: var(--lovable-border);
+}

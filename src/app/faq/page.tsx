@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PublicShell } from "@/components/public/public-shell";
 
 const faqItems = [
@@ -57,21 +56,21 @@ const faqItems = [
 export default function FaqPage() {
   return (
     <PublicShell>
-      <h1 className="text-3xl font-bold mb-2">Veelgestelde vragen</h1>
-      <p className="text-muted-foreground mb-6">
+      <h1 className="lovable-heading text-3xl mb-2">Veelgestelde vragen</h1>
+      <p className="lovable-text-muted mb-6">
         Hieronder vindt u antwoorden op veelgestelde vragen over onze stalling.
       </p>
 
       <div className="space-y-4">
         {faqItems.map((item, index) => (
-          <Card key={index}>
-            <CardHeader>
-              <CardTitle className="text-base">{item.question}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">{item.answer}</p>
-            </CardContent>
-          </Card>
+          <div key={index} className="lovable-card">
+            <div className="p-6 pb-2">
+              <h2 className="font-semibold text-base">{item.question}</h2>
+            </div>
+            <div className="px-6 pb-6">
+              <p className="text-sm lovable-text-muted">{item.answer}</p>
+            </div>
+          </div>
         ))}
       </div>
     </PublicShell>

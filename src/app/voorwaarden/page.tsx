@@ -3,14 +3,14 @@ import { PublicShell } from "@/components/public/public-shell";
 export default function VoorwaardenPage() {
   return (
     <PublicShell>
-    <div className="prose prose-sm max-w-none">
-      <h1>Stallingsvoorwaarden</h1>
-      <p className="text-muted-foreground">
+    <div className="max-w-none space-y-6">
+      <h1 className="lovable-heading text-3xl">Stallingsvoorwaarden</h1>
+      <p className="lovable-text-muted">
         Caravanstalling Aandedijk - Gageldijk 204, 3566 MJ Utrecht
       </p>
 
-      <h2>Artikel 1 - Gebruik en eigendom</h2>
-      <ul>
+      <h2 className="font-semibold text-lg mt-8">Artikel 1 - Gebruik en eigendom</h2>
+      <ul className="list-disc pl-6 space-y-1 lovable-text-muted">
         <li>
           De stallingsgebruiker maakt gebruik van een plaats in de stalling,
           welke door de stallingshouder wordt bepaald.
@@ -26,8 +26,8 @@ export default function VoorwaardenPage() {
         </li>
       </ul>
 
-      <h2>Artikel 2 - Betaling en huur</h2>
-      <ul>
+      <h2 className="font-semibold text-lg mt-8">Artikel 2 - Betaling en huur</h2>
+      <ul className="list-disc pl-6 space-y-1 lovable-text-muted">
         <li>De huurperiode bedraagt 12 maanden.</li>
         <li>
           Betaling van de stallingshuur dient per vooruitbetaling plaats te
@@ -45,8 +45,8 @@ export default function VoorwaardenPage() {
         </li>
       </ul>
 
-      <h2>Artikel 3 - Ophalen en brengen</h2>
-      <ul>
+      <h2 className="font-semibold text-lg mt-8">Artikel 3 - Ophalen en brengen</h2>
+      <ul className="list-disc pl-6 space-y-1 lovable-text-muted">
         <li>
           De stallingsgebruiker dient zich minstens 4 dagen van tevoren aan te
           melden via de website.
@@ -65,8 +65,8 @@ export default function VoorwaardenPage() {
         </li>
       </ul>
 
-      <h2>Artikel 4 - Verantwoordelijkheden</h2>
-      <ul>
+      <h2 className="font-semibold text-lg mt-8">Artikel 4 - Verantwoordelijkheden</h2>
+      <ul className="list-disc pl-6 space-y-1 lovable-text-muted">
         <li>Gasflessen moeten worden verwijderd.</li>
         <li>
           De stallingshouder is nimmer aansprakelijk voor schade aan het
@@ -76,8 +76,8 @@ export default function VoorwaardenPage() {
         <li>Restitutie van stallingsgeld is niet mogelijk.</li>
       </ul>
 
-      <h2>Artikel 5 - Opzegging</h2>
-      <ul>
+      <h2 className="font-semibold text-lg mt-8">Artikel 5 - Opzegging</h2>
+      <ul className="list-disc pl-6 space-y-1 lovable-text-muted">
         <li>
           Opzegging dient minstens een maand voor het einde van de lopende
           contractduur te geschieden.
@@ -89,8 +89,8 @@ export default function VoorwaardenPage() {
         </li>
       </ul>
 
-      <h2>Artikel 6 - Overig</h2>
-      <ul>
+      <h2 className="font-semibold text-lg mt-8">Artikel 6 - Overig</h2>
+      <ul className="list-disc pl-6 space-y-1 lovable-text-muted">
         <li>
           Op deze voorwaarden is het Nederlands recht van toepassing.
         </li>

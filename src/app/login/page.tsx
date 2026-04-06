@@ -3,16 +3,7 @@
 import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -71,44 +62,72 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Stalling aan de Dijk</CardTitle>
-          <CardDescription>
-            Log in om het beheersysteem te openen
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="lovable min-h-screen flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <Link href="/" className="text-xl font-semibold tracking-tight" style={{ color: "#1c1c1c" }}>
+            Stalling aan de Dijk
+          </Link>
+          <p className="lovable-text-muted text-sm mt-2">
+            Log in op uw account
+          </p>
+        </div>
+        <div className="lovable-card p-6 sm:p-8">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email">E-mailadres</Label>
-              <Input
+              <label htmlFor="email" className="text-sm font-medium" style={{ color: "#1c1c1c" }}>
+                E-mailadres
+              </label>
+              <input
                 id="email"
                 name="email"
                 type="email"
                 placeholder="naam@voorbeeld.nl"
                 required
+                className="w-full px-3 py-2.5 text-sm rounded-md outline-none transition-all"
+                style={{
+                  backgroundColor: "#f7f4ed",
+                  border: "1px solid #eceae4",
+                  color: "#1c1c1c",
+                }}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Wachtwoord</Label>
-              <Input
+              <label htmlFor="password" className="text-sm font-medium" style={{ color: "#1c1c1c" }}>
+                Wachtwoord
+              </label>
+              <input
                 id="password"
                 name="password"
                 type="password"
                 required
+                className="w-full px-3 py-2.5 text-sm rounded-md outline-none transition-all"
+                style={{
+                  backgroundColor: "#f7f4ed",
+                  border: "1px solid #eceae4",
+                  color: "#1c1c1c",
+                }}
               />
             </div>
             {error && (
               <p className="text-sm text-red-600">{error}</p>
             )}
-            <Button type="submit" className="w-full" disabled={loading}>
+            <button
+              type="submit"
+              disabled={loading}
+              className="lovable-btn-primary w-full py-3 disabled:opacity-50"
+            >
               {loading ? "Bezig met inloggen..." : "Inloggen"}
-            </Button>
+            </button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+        <p className="text-center text-sm lovable-text-muted mt-6">
+          Nog geen account?{" "}
+          <Link href="/aanmelden" className="underline" style={{ color: "#1c1c1c" }}>
+            Aanmelden
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
