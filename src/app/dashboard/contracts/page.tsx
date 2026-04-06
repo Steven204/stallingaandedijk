@@ -35,6 +35,7 @@ export default async function ContractsPage() {
       vehicle: { select: { licensePlate: true, type: true, lengthInMeters: true } },
     },
     orderBy: { startDate: "desc" },
+    take: 100,
   });
 
   return (

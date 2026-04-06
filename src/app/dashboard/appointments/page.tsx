@@ -116,17 +116,31 @@ function AppointmentTable({ appointments, emptyMessage }: {
 export default async function AppointmentsPage() {
   await getSession();
 
-  const appointments = await prisma.appointment.findMany({
+  const selectFields = {
     include: {
       customer: { select: { id: true, name: true } },
       vehicle: { select: { licensePlate: true, type: true, lengthInMeters: true } },
     },
-    orderBy: { pickupDate: "asc" },
-  });
+  } as const;
 
-  const pending = appointments.filter((a: typeof appointments[number]) => a.status === "REQUESTED");
-  const confirmed = appointments.filter((a: typeof appointments[number]) => a.status === "CONFIRMED");
-  const completed = appointments.filter((a: typeof appointments[number]) => a.status === "COMPLETED" || a.status === "REJECTED");
+  const [pending, confirmed, completed] = await Promise.all([
+    prisma.appointment.findMany({
+      where: { status: "REQUESTED" },
+      ...selectFields,
+      orderBy: { pickupDate: "asc" },
+    }),
+    prisma.appointment.findMany({
+      where: { status: "CONFIRMED" },
+      ...selectFields,
+      orderBy: { pickupDate: "asc" },
+    }),
+    prisma.appointment.findMany({
+      where: { status: { in: ["COMPLETED", "REJECTED"] } },
+      ...selectFields,
+      orderBy: { pickupDate: "desc" },
+      take: 20,
+    }),
+  ]);
 
   return (
     <div>

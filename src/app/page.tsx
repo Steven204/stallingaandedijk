@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 60; // Cache 1 minuut
 
 import { prisma } from "@/lib/prisma";
 import { PublicShell } from "@/components/public/public-shell";

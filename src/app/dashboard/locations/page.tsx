@@ -8,50 +8,58 @@ export default async function LocationsPage() {
   const session = await getSession();
   const isAdmin = session.user.role === "ADMIN";
 
-  const locations = await prisma.storageLocation.findMany({
-    include: {
-      placements: {
-        where: { removedAt: null },
-        include: {
-          vehicle: {
-            select: {
-              id: true,
-              licensePlate: true,
-              type: true,
-              brand: true,
-              model: true,
-              customer: { select: { name: true, phone: true } },
-            },
+  // Two separate queries instead of nested N+1
+  const [locations, activePlacements] = await Promise.all([
+    prisma.storageLocation.findMany({
+      orderBy: { code: "asc" },
+    }),
+    prisma.vehiclePlacement.findMany({
+      where: { removedAt: null },
+      select: {
+        locationId: true,
+        vehicle: {
+          select: {
+            id: true,
+            licensePlate: true,
+            type: true,
+            brand: true,
+            model: true,
+            customer: { select: { name: true, phone: true } },
           },
         },
-        take: 1,
       },
-    },
-    orderBy: { code: "asc" },
-  });
+    }),
+  ]);
+
+  // Build lookup map: locationId -> vehicle
+  const placementMap = new Map(
+    activePlacements.map((p: typeof activePlacements[number]) => [p.locationId, p.vehicle])
+  );
 
   const sections: string[] = [...new Set(locations.map((l: typeof locations[number]) => l.section ?? "Overig"))];
 
-  // Serialize for client component
-  const serializedLocations = locations.map((l: typeof locations[number]) => ({
-    id: l.id,
-    code: l.code,
-    label: l.label,
-    section: l.section ?? "Overig",
-    isIndoor: l.isIndoor,
-    isOccupied: l.placements.length > 0,
-    vehicle: l.placements[0]?.vehicle
-      ? {
-          id: l.placements[0].vehicle.id,
-          licensePlate: l.placements[0].vehicle.licensePlate,
-          type: l.placements[0].vehicle.type,
-          brand: l.placements[0].vehicle.brand,
-          model: l.placements[0].vehicle.model,
-          customerName: l.placements[0].vehicle.customer.name,
-          customerPhone: l.placements[0].vehicle.customer.phone,
-        }
-      : null,
-  }));
+  const serializedLocations = locations.map((l: typeof locations[number]) => {
+    const vehicle = placementMap.get(l.id);
+    return {
+      id: l.id,
+      code: l.code,
+      label: l.label,
+      section: l.section ?? "Overig",
+      isIndoor: l.isIndoor,
+      isOccupied: !!vehicle,
+      vehicle: vehicle
+        ? {
+            id: vehicle.id,
+            licensePlate: vehicle.licensePlate,
+            type: vehicle.type,
+            brand: vehicle.brand,
+            model: vehicle.model,
+            customerName: vehicle.customer.name,
+            customerPhone: vehicle.customer.phone,
+          }
+        : null,
+    };
+  });
 
   return (
     <div>

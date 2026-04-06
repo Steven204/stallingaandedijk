@@ -96,6 +96,8 @@ model User {
   storagePhotos       StoragePhoto[]       @relation("PhotoTakenBy")
   vehiclePlacements   VehiclePlacement[]   @relation("PlacedBy")
   maintenanceRequests MaintenanceRequest[]
+
+  @@index([role, isApproved])
 }
 
 model Vehicle {
@@ -122,6 +124,8 @@ model Vehicle {
 
   @@index([customerId])
   @@index([licensePlate])
+  @@index([isApproved])
+  @@index([status, isApproved])
 }
 
 model StorageLocation {
@@ -136,6 +140,9 @@ model StorageLocation {
   // Relations
   placements VehiclePlacement[]
   photos     StoragePhoto[]
+
+  @@index([section])
+  @@index([isOccupied])
 }
 
 model StoragePhoto {
@@ -170,6 +177,8 @@ model VehiclePlacement {
 
   @@index([vehicleId])
   @@index([locationId])
+  @@index([vehicleId, removedAt])
+  @@index([locationId, removedAt])
 }
 
 model Contract {
@@ -193,6 +202,7 @@ model Contract {
 
   @@index([customerId])
   @@index([vehicleId])
+  @@index([status])
 }
 
 model Invoice {
@@ -234,6 +244,8 @@ model Appointment {
   @@index([customerId])
   @@index([vehicleId])
   @@index([pickupDate])
+  @@index([status])
+  @@index([customerId, status])
 }
 
 model PriceConfig {
