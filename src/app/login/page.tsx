@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useState, useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,8 +16,21 @@ import {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      const role = (session.user as { role?: string }).role;
+      if (role === "CUSTOMER") {
+        router.push("/portal");
+      } else {
+        router.push("/dashboard");
+      }
+    }
+  }, [status, session, router]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -47,6 +60,14 @@ export default function LoginPage() {
       router.push(redirect);
       router.refresh();
     }
+  }
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <p className="text-muted-foreground">Laden...</p>
+      </div>
+    );
   }
 
   return (
