@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AuthButton } from "@/components/public/auth-button";
 
 export function PublicShell({ children }: { children: React.ReactNode }) {
   return (
@@ -22,9 +23,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
             <Link href="/voorwaarden">
               <Button variant="ghost" size="sm">Voorwaarden</Button>
             </Link>
-            <Link href="/login">
-              <Button size="sm">Inloggen</Button>
-            </Link>
+            <AuthButton />
           </nav>
         </div>
       </header>
