@@ -68,7 +68,7 @@ export function CustomerForm({ customer }: CustomerFormProps) {
             id="password"
             name="password"
             type="password"
-            placeholder="Standaard: welkom123"
+            placeholder="Wordt random gegenereerd als leeg"
           />
         </div>
       )}

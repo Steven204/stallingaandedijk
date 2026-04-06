@@ -11,6 +11,12 @@ export async function createMaintenanceRequest(formData: FormData) {
   const type = formData.get("type") as "APK" | "BATTERY" | "TIRES" | "GENERAL" | "OTHER";
   const description = (formData.get("description") as string) || undefined;
 
+  // Verify vehicle belongs to this customer
+  const vehicle = await prisma.vehicle.findUnique({ where: { id: vehicleId } });
+  if (!vehicle || vehicle.customerId !== session.user.id) {
+    throw new Error("Voertuig niet gevonden of behoort niet tot uw account");
+  }
+
   await prisma.maintenanceRequest.create({
     data: {
       vehicleId,

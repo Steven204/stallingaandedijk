@@ -9,6 +9,13 @@ export async function createAppointment(formData: FormData) {
   const session = await getSession();
 
   const vehicleId = formData.get("vehicleId") as string;
+
+  // Verify vehicle belongs to this customer
+  const vehicle = await prisma.vehicle.findUnique({ where: { id: vehicleId } });
+  if (!vehicle || vehicle.customerId !== session.user.id) {
+    throw new Error("Voertuig niet gevonden of behoort niet tot uw account");
+  }
+
   const pickupDate = new Date(formData.get("pickupDate") as string);
   const returnDateStr = formData.get("returnDate") as string;
   const returnDate = returnDateStr ? new Date(returnDateStr) : null;

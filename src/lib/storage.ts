@@ -34,8 +34,16 @@ export async function savePhoto(
   }
 
   // Fallback to local storage
+  // Sanitize filename to prevent path traversal
+  const safeName = fileName.replace(/\.\./g, "").replace(/[^a-zA-Z0-9\-_\/\.]/g, "");
   const uploadDir = path.join(process.cwd(), "public", "uploads");
-  const filePath = path.join(uploadDir, fileName);
+  const filePath = path.join(uploadDir, safeName);
+
+  // Verify resolved path is still within upload directory
+  if (!filePath.startsWith(uploadDir)) {
+    throw new Error("Invalid file path");
+  }
+
   const dir = path.dirname(filePath);
 
   await fs.mkdir(dir, { recursive: true });

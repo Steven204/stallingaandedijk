@@ -21,6 +21,24 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Validate file type
+  const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+  if (!ALLOWED_TYPES.includes(photo.type)) {
+    return Response.json(
+      { error: "Ongeldig bestandstype. Alleen JPEG, PNG en WebP zijn toegestaan." },
+      { status: 400 }
+    );
+  }
+
+  // Validate file size (max 10MB)
+  const MAX_SIZE = 10 * 1024 * 1024;
+  if (photo.size > MAX_SIZE) {
+    return Response.json(
+      { error: "Bestand is te groot. Maximum is 10MB." },
+      { status: 413 }
+    );
+  }
+
   // Find vehicle by license plate
   const vehicle = await prisma.vehicle.findUnique({
     where: { licensePlate: licensePlate.toUpperCase().trim() },

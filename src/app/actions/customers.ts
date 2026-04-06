@@ -2,7 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth-utils";
-import { hash } from "bcryptjs";
+import { hash, genSalt } from "bcryptjs";
+import { randomBytes } from "crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import * as z from "zod";
@@ -30,7 +31,7 @@ export async function createCustomer(formData: FormData) {
     password: formData.get("password") || undefined,
   });
 
-  const password = data.password || "welkom123";
+  const password = data.password || randomBytes(12).toString("base64url");
   const hashedPassword = await hash(password, 12);
 
   const customer = await prisma.user.create({
@@ -50,18 +51,23 @@ export async function createCustomer(formData: FormData) {
   const licensePlate = (formData.get("licensePlate") as string)?.toUpperCase().trim();
   const vehicleType = formData.get("vehicleType") as string;
   const lengthInMeters = parseFloat(formData.get("lengthInMeters") as string);
+  const validTypes = ["CARAVAN", "CAMPER", "BOAT", "OLDTIMER", "CAR"];
 
-  if (licensePlate && vehicleType && lengthInMeters > 0) {
-    await prisma.vehicle.create({
-      data: {
-        customerId: customer.id,
-        type: vehicleType as "CARAVAN" | "CAMPER" | "BOAT" | "OLDTIMER" | "CAR",
-        licensePlate,
-        brand: (formData.get("vehicleBrand") as string) || undefined,
-        model: (formData.get("vehicleModel") as string) || undefined,
-        lengthInMeters,
-      },
-    });
+  if (licensePlate && vehicleType && validTypes.includes(vehicleType) && lengthInMeters > 0 && lengthInMeters < 30) {
+    // Check license plate uniqueness
+    const existingVehicle = await prisma.vehicle.findUnique({ where: { licensePlate } });
+    if (!existingVehicle) {
+      await prisma.vehicle.create({
+        data: {
+          customerId: customer.id,
+          type: vehicleType as "CARAVAN" | "CAMPER" | "BOAT" | "OLDTIMER" | "CAR",
+          licensePlate,
+          brand: ((formData.get("vehicleBrand") as string) || "").substring(0, 100) || undefined,
+          model: ((formData.get("vehicleModel") as string) || "").substring(0, 100) || undefined,
+          lengthInMeters,
+        },
+      });
+    }
   }
 
   revalidatePath("/dashboard/customers");
