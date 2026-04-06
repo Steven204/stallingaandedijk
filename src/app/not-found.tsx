@@ -1,22 +1,17 @@
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="lovable min-h-screen flex items-center justify-center px-4">
       <div className="text-center">
-        <h1 className="text-6xl font-bold text-muted-foreground mb-4">404</h1>
-        <h2 className="text-xl font-medium mb-2">Pagina niet gevonden</h2>
-        <p className="text-muted-foreground mb-6">
+        <h1 className="text-6xl font-semibold mb-4" style={{ color: "rgba(28, 28, 28, 0.2)" }}>404</h1>
+        <h2 className="text-xl font-semibold mb-2" style={{ color: "#1c1c1c" }}>Pagina niet gevonden</h2>
+        <p className="lovable-text-muted mb-8">
           De pagina die u zoekt bestaat niet of is verplaatst.
         </p>
         <div className="flex gap-3 justify-center">
-          <Link href="/">
-            <Button>Naar homepagina</Button>
-          </Link>
-          <Link href="/login">
-            <Button variant="outline">Inloggen</Button>
-          </Link>
+          <Link href="/" className="lovable-btn-primary">Naar homepagina</Link>
+          <Link href="/login" className="lovable-btn-ghost">Inloggen</Link>
         </div>
       </div>
     </div>

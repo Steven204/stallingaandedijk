@@ -117,14 +117,17 @@ export function AppSidebar({ user }: AppSidebarProps) {
 
   return (
     <Sidebar>
-      <SidebarHeader className="border-b px-4 py-3">
+      <SidebarHeader className="px-4 py-4" style={{ borderBottom: "1px solid #eceae4" }}>
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-bold">
+          <div
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold"
+            style={{ backgroundColor: "#1c1c1c", color: "#fcfbf8" }}
+          >
             SD
           </div>
           <div>
-            <p className="text-sm font-semibold">Stalling aan de Dijk</p>
-            <p className="text-xs text-muted-foreground">Beheersysteem</p>
+            <p className="text-sm font-semibold" style={{ color: "#1c1c1c" }}>Stalling aan de Dijk</p>
+            <p className="text-xs" style={{ color: "#5f5f5d" }}>Beheersysteem</p>
           </div>
         </div>
       </SidebarHeader>

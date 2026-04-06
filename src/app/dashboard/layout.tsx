@@ -12,8 +12,8 @@ export default async function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar user={session.user} />
-      <main className="flex-1 overflow-auto">
-        <div className="flex items-center gap-2 border-b px-4 py-3">
+      <main className="flex-1 overflow-auto" style={{ backgroundColor: "#f7f4ed" }}>
+        <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: "1px solid #eceae4" }}>
           <SidebarTrigger />
         </div>
         <div className="p-6">{children}</div>
