@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,10 +45,13 @@ interface LocationMapProps {
 export function LocationMap({ locations, isAdmin }: LocationMapProps) {
   const [search, setSearch] = useState("");
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+  const [serverResults, setServerResults] = useState<Location[] | null>(null);
+  const [searching, setSearching] = useState(false);
 
   const searchLower = search.toLowerCase().trim();
 
-  const matchedLocationIds = useMemo(() => {
+  // Client-side filter for instant results
+  const clientMatches = useMemo(() => {
     if (!searchLower) return null;
     return new Set(
       locations
@@ -65,10 +68,42 @@ export function LocationMap({ locations, isAdmin }: LocationMapProps) {
     );
   }, [locations, searchLower]);
 
+  // Server-side search for deeper results (debounced)
+  const doServerSearch = useCallback(async (q: string) => {
+    if (q.length < 2) { setServerResults(null); return; }
+    setSearching(true);
+    try {
+      const res = await fetch(`/api/locations/search?q=${encodeURIComponent(q)}`);
+      if (res.ok) setServerResults(await res.json());
+    } finally {
+      setSearching(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!searchLower) { setServerResults(null); return; }
+    const timer = setTimeout(() => doServerSearch(searchLower), 300);
+    return () => clearTimeout(timer);
+  }, [searchLower, doServerSearch]);
+
+  // Combine client + server results
+  const matchedLocationIds = useMemo(() => {
+    if (!searchLower) return null;
+    const ids = new Set(clientMatches);
+    if (serverResults) {
+      for (const r of serverResults) ids.add(r.id);
+    }
+    return ids;
+  }, [searchLower, clientMatches, serverResults]);
+
   const searchResults = useMemo(() => {
     if (!matchedLocationIds) return [];
-    return locations.filter((l) => matchedLocationIds.has(l.id));
-  }, [locations, matchedLocationIds]);
+    // Prefer server results for richer data, fall back to client data
+    const serverMap = new Map((serverResults ?? []).map((r) => [r.id, r]));
+    return locations
+      .filter((l) => matchedLocationIds.has(l.id))
+      .map((l) => serverMap.get(l.id) ?? l);
+  }, [locations, matchedLocationIds, serverResults]);
 
   const sections = useMemo(() => {
     return [...new Set(locations.map((l) => l.section))];
@@ -110,6 +145,11 @@ export function LocationMap({ locations, isAdmin }: LocationMapProps) {
           }}
           className="pl-10 pr-10 h-11 text-base"
         />
+        {searching && (
+          <div className="absolute right-10 top-1/2 -translate-y-1/2">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+          </div>
+        )}
         {search && (
           <button
             onClick={() => {

@@ -2,11 +2,18 @@ import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import QRCode from "qrcode";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
   if (!session?.user || !["ADMIN", "EMPLOYEE"].includes(session.user.role)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const ip = getClientIp(request);
+  const { success } = rateLimit(`qr-generate:${ip}`, 60, 60 * 1000);
+  if (!success) {
+    return Response.json({ error: "Te veel verzoeken. Probeer het later opnieuw." }, { status: 429 });
   }
 
   const locationId = request.nextUrl.searchParams.get("locationId");

@@ -3,13 +3,28 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth-utils";
 import { revalidatePath } from "next/cache";
+import * as z from "zod";
+
+const maintenanceRequestSchema = z.object({
+  vehicleId: z.string().min(1, { error: "Voertuig is verplicht" }),
+  type: z.enum(["APK", "BATTERY", "TIRES", "GENERAL", "OTHER"]),
+  description: z.string().max(500).optional(),
+});
+
+const maintenanceStatusSchema = z.object({
+  id: z.string().min(1),
+  status: z.enum(["IN_PROGRESS", "COMPLETED", "CANCELLED"]),
+  notes: z.string().max(500).optional(),
+});
 
 export async function createMaintenanceRequest(formData: FormData) {
   const session = await getSession();
 
-  const vehicleId = formData.get("vehicleId") as string;
-  const type = formData.get("type") as "APK" | "BATTERY" | "TIRES" | "GENERAL" | "OTHER";
-  const description = (formData.get("description") as string) || undefined;
+  const { vehicleId, type, description } = maintenanceRequestSchema.parse({
+    vehicleId: formData.get("vehicleId"),
+    type: formData.get("type"),
+    description: formData.get("description") || undefined,
+  });
 
   // Verify vehicle belongs to this customer
   const vehicle = await prisma.vehicle.findUnique({ where: { id: vehicleId } });
@@ -40,9 +55,15 @@ export async function updateMaintenanceStatus(
     throw new Error("Unauthorized");
   }
 
+  const data = maintenanceStatusSchema.parse({
+    id,
+    status,
+    notes: notes || undefined,
+  });
+
   await prisma.maintenanceRequest.update({
-    where: { id },
-    data: { status, notes: notes || undefined },
+    where: { id: data.id },
+    data: { status: data.status, notes: data.notes },
   });
 
   revalidatePath("/dashboard/maintenance");

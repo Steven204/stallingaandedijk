@@ -3,19 +3,32 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth-utils";
 import { revalidatePath } from "next/cache";
+import * as z from "zod";
+
+const portalVehicleSchema = z.object({
+  type: z.enum(["CARAVAN", "CAMPER", "BOAT", "OLDTIMER", "CAR"]),
+  licensePlate: z.string().min(1, { error: "Kenteken is verplicht" }).max(15),
+  brand: z.string().max(100).optional(),
+  model: z.string().max(100).optional(),
+  lengthInMeters: z.number().positive({ error: "Lengte moet positief zijn" }).max(30),
+});
 
 export async function addVehicle(formData: FormData) {
   const session = await getSession();
 
-  const type = formData.get("type") as "CARAVAN" | "CAMPER" | "BOAT" | "OLDTIMER" | "CAR";
-  const licensePlate = (formData.get("licensePlate") as string).toUpperCase().trim();
-  const brand = (formData.get("brand") as string) || undefined;
-  const model = (formData.get("model") as string) || undefined;
-  const lengthInMeters = parseFloat(formData.get("lengthInMeters") as string);
+  const data = portalVehicleSchema.parse({
+    type: formData.get("type"),
+    licensePlate: formData.get("licensePlate"),
+    brand: formData.get("brand") || undefined,
+    model: formData.get("model") || undefined,
+    lengthInMeters: parseFloat(formData.get("lengthInMeters") as string),
+  });
 
-  if (!type || !licensePlate || !lengthInMeters) {
-    throw new Error("Vul alle verplichte velden in");
-  }
+  const type = data.type;
+  const licensePlate = data.licensePlate.toUpperCase().trim();
+  const brand = data.brand;
+  const model = data.model;
+  const lengthInMeters = data.lengthInMeters;
 
   const existing = await prisma.vehicle.findUnique({ where: { licensePlate } });
   if (existing) {

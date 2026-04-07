@@ -4,11 +4,32 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth-utils";
 import { revalidatePath } from "next/cache";
 import { isDateInClosedSeason } from "@/lib/seasons";
+import * as z from "zod";
+
+const appointmentSchema = z.object({
+  vehicleId: z.string().min(1, { error: "Voertuig is verplicht" }),
+  pickupDate: z.string().min(1, { error: "Ophaaldatum is verplicht" }).refine(
+    (val) => !isNaN(Date.parse(val)),
+    { error: "Ongeldige ophaaldatum" }
+  ),
+  returnDate: z.string().refine(
+    (val) => !val || !isNaN(Date.parse(val)),
+    { error: "Ongeldige terugbrengdatum" }
+  ).optional(),
+  notes: z.string().max(500).optional(),
+});
 
 export async function createAppointment(formData: FormData) {
   const session = await getSession();
 
-  const vehicleId = formData.get("vehicleId") as string;
+  const data = appointmentSchema.parse({
+    vehicleId: formData.get("vehicleId"),
+    pickupDate: formData.get("pickupDate"),
+    returnDate: formData.get("returnDate") || undefined,
+    notes: formData.get("notes") || undefined,
+  });
+
+  const vehicleId = data.vehicleId;
 
   // Verify vehicle belongs to this customer
   const vehicle = await prisma.vehicle.findUnique({ where: { id: vehicleId } });
@@ -16,10 +37,9 @@ export async function createAppointment(formData: FormData) {
     throw new Error("Voertuig niet gevonden of behoort niet tot uw account");
   }
 
-  const pickupDate = new Date(formData.get("pickupDate") as string);
-  const returnDateStr = formData.get("returnDate") as string;
-  const returnDate = returnDateStr ? new Date(returnDateStr) : null;
-  const notes = (formData.get("notes") as string) || undefined;
+  const pickupDate = new Date(data.pickupDate);
+  const returnDate = data.returnDate ? new Date(data.returnDate) : null;
+  const notes = data.notes;
 
   // Check minimum 4 days in advance
   const minDate = new Date();
