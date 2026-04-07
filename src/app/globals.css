@@ -146,35 +146,130 @@
   }
 }
 
-/* Lovable: card radius override for shadcn */
+/* ===================================================
+   Lovable Design System — Global Component Overrides
+   =================================================== */
+
+/* Cards: warm border, 12px radius, no shadow */
 [data-slot="card"] {
   border-radius: 12px !important;
+  border: 1px solid #eceae4 !important;
+  box-shadow: none !important;
+  background-color: #f7f4ed !important;
+}
+
+/* Buttons: Lovable inset shadow on primary */
+[data-slot="button"] {
+  border-radius: 6px;
+  font-weight: 400;
+  transition: opacity 0.15s ease;
+}
+[data-slot="button"]:active:not([aria-haspopup]) {
+  opacity: 0.8;
+}
+/* Primary button: dark charcoal with inset shadow */
+[data-slot="button"].bg-primary {
+  box-shadow: rgba(255,255,255,0.2) 0px 0.5px 0px 0px inset,
+              rgba(0,0,0,0.2) 0px 0px 0px 0.5px inset,
+              rgba(0,0,0,0.05) 0px 1px 2px 0px !important;
+}
+/* Outline button: interactive warm border */
+[data-slot="button"].border-border {
+  border-color: rgba(28, 28, 28, 0.25) !important;
+}
+[data-slot="button"]:hover {
+  opacity: 0.85;
+}
+
+/* Inputs: warm background, warm border, warm focus */
+[data-slot="input"],
+[data-slot="textarea"] {
+  background-color: #f7f4ed !important;
+  border: 1px solid #eceae4 !important;
+  border-radius: 6px !important;
+  color: #1c1c1c !important;
+}
+[data-slot="input"]::placeholder,
+[data-slot="textarea"]::placeholder {
+  color: #5f5f5d !important;
+}
+[data-slot="input"]:focus-visible,
+[data-slot="textarea"]:focus-visible {
+  border-color: rgba(28, 28, 28, 0.4) !important;
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px !important;
+  outline: none !important;
+}
+
+/* Select trigger */
+[data-slot="select-trigger"] {
+  background-color: #f7f4ed !important;
+  border: 1px solid #eceae4 !important;
+  border-radius: 6px !important;
+}
+
+/* Tables: warm header */
+[data-slot="table-header"] {
+  background-color: rgba(28, 28, 28, 0.02);
+}
+[data-slot="table-head"] {
+  color: #5f5f5d !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+}
+[data-slot="table-row"] {
   border-color: #eceae4 !important;
 }
 
-/* Lovable: softer sidebar active state */
+/* Badges: compact, warm */
+[data-slot="badge"] {
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+}
+
+/* Sidebar: warm active state */
 [data-sidebar="menu-button"][data-active="true"] {
   background: rgba(28, 28, 28, 0.06) !important;
   font-weight: 500;
 }
-
-/* Lovable: table styling */
-[data-slot="table"] th {
-  color: #5f5f5d;
-  font-weight: 500;
-  font-size: 13px;
+[data-sidebar="menu-button"]:hover {
+  background: rgba(28, 28, 28, 0.04) !important;
 }
 
-/* Lovable: badge styling */
-[data-slot="badge"] {
-  border-radius: 6px;
-  font-weight: 500;
+/* Dialog: warm overlay and card */
+[data-slot="dialog-overlay"] {
+  background-color: rgba(28, 28, 28, 0.3) !important;
+}
+[data-slot="dialog-content"] {
+  border-radius: 16px !important;
+  border: 1px solid #eceae4 !important;
+  background-color: #f7f4ed !important;
 }
 
-/* Lovable: input focus warmth */
-[data-slot="input"]:focus-visible {
-  border-color: rgba(28, 28, 28, 0.4) !important;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px !important;
+/* Separator */
+[data-slot="separator"] {
+  background-color: #eceae4 !important;
+}
+
+/* Label */
+[data-slot="label"] {
+  color: #1c1c1c !important;
+  font-weight: 500 !important;
+}
+
+/* Popover */
+[data-slot="popover-content"] {
+  border-radius: 12px !important;
+  border: 1px solid #eceae4 !important;
+  background-color: #f7f4ed !important;
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 8px 24px !important;
+}
+
+/* Dropdown menu */
+[data-slot="dropdown-menu-content"] {
+  border-radius: 8px !important;
+  border: 1px solid #eceae4 !important;
+  background-color: #f7f4ed !important;
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 8px 24px !important;
 }
 
 /* Lovable Design System — Public pages only */
