@@ -1,10 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateProfile } from "@/app/actions/profile";
-import { useSubmitState } from "@/components/ui/submit-button";
 import { Check, Loader2 } from "lucide-react";
 import type { User } from "@/generated/prisma";
 
@@ -13,12 +13,25 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ user }: ProfileFormProps) {
-  const { state, handleAction } = useSubmitState();
+  const [loading, setLoading] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (saved) {
+      const timer = setTimeout(() => setSaved(false), 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [saved]);
 
   async function handleSubmit(formData: FormData) {
-    await handleAction(async () => {
+    setLoading(true);
+    setSaved(false);
+    try {
       await updateProfile(formData);
-    });
+      setSaved(true);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -73,10 +86,14 @@ export function ProfileForm({ user }: ProfileFormProps) {
       </div>
 
       <div className="flex items-center gap-3">
-        <Button type="submit" disabled={state === "loading"} className={state === "success" ? "bg-green-600 hover:bg-green-600 text-white" : ""}>
-          {state === "loading" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {state === "success" && <Check className="mr-2 h-4 w-4" />}
-          {state === "success" ? "Opgeslagen!" : state === "loading" ? "Opslaan..." : "Opslaan"}
+        <Button
+          type="submit"
+          disabled={loading}
+          className={saved ? "bg-green-600 hover:bg-green-600 text-white" : ""}
+        >
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {saved && <Check className="mr-2 h-4 w-4" />}
+          {saved ? "Opgeslagen!" : loading ? "Opslaan..." : "Opslaan"}
         </Button>
       </div>
     </form>
