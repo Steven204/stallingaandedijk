@@ -60,7 +60,7 @@ function CheckinForm() {
   // Step 3: Success
   if (status === "success") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 text-center">
             <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
@@ -94,7 +94,7 @@ function CheckinForm() {
 
   // Step 2: Location set → kenteken invoeren
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Voertuig Inchecken</CardTitle>

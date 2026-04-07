@@ -162,11 +162,11 @@ export default async function AppointmentsPage() {
             <p className="text-xs text-blue-600">Ingepland</p>
           </div>
         </div>
-        <div className="rounded-lg border bg-gray-50 border-gray-200 p-3 flex items-center gap-3">
-          <CheckCircle2 className="h-5 w-5 text-gray-500" />
+        <div className="rounded-lg border bg-muted border-muted p-3 flex items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 text-muted-foreground" />
           <div>
-            <p className="text-2xl font-bold text-gray-600">{completed.length}</p>
-            <p className="text-xs text-gray-500">Afgerond / afgewezen</p>
+            <p className="text-2xl font-bold text-muted-foreground">{completed.length}</p>
+            <p className="text-xs text-muted-foreground">Afgerond / afgewezen</p>
           </div>
         </div>
       </div>

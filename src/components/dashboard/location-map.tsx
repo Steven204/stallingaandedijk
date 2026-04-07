@@ -119,7 +119,7 @@ export function LocationMap({ locations, isAdmin }: LocationMapProps) {
     <div>
       {/* Stats bar */}
       <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="rounded-lg border bg-white p-3 text-center">
+        <div className="rounded-lg border bg-card p-3 text-center">
           <p className="text-2xl font-bold">{stats.total}</p>
           <p className="text-xs text-muted-foreground">Totaal</p>
         </div>

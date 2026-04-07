@@ -95,7 +95,7 @@ export function QrScanner({ onScanned }: QrScannerProps) {
     const sections = [...new Set(locations.map((l) => l.section ?? "Overig"))];
 
     return (
-      <div className="min-h-screen bg-gray-50 px-4 py-8">
+      <div className="min-h-screen bg-background px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-xl font-bold">Kies een stallingsplek</h1>
@@ -144,7 +144,7 @@ export function QrScanner({ onScanned }: QrScannerProps) {
 
   // Default: scanner + picker buttons
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <QrCode className="h-12 w-12 mx-auto mb-2 text-primary" />
