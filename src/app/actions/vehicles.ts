@@ -51,7 +51,6 @@ export async function updateVehicle(id: string, formData: FormData) {
   await prisma.vehicle.update({ where: { id }, data });
 
   revalidatePath("/dashboard/vehicles");
-  redirect("/dashboard/vehicles");
 }
 
 export async function deleteVehicle(id: string) {

@@ -1,10 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { useSubmitState } from "@/components/ui/submit-button";
 import { Check, Loader2 } from "lucide-react";
 import {
   Select,
@@ -31,17 +31,32 @@ const vehicleTypes = [
 
 export function CustomerForm({ customer }: CustomerFormProps) {
   const isEditing = !!customer;
-  const { state, handleAction } = useSubmitState();
+  const [loading, setLoading] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (saved) {
+      const timer = setTimeout(() => setSaved(false), 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [saved]);
 
   async function handleSubmit(formData: FormData) {
-    await handleAction(async () => {
+    setLoading(true);
+    setSaved(false);
+    try {
       if (isEditing) {
         await updateCustomer(customer.id, formData);
       } else {
         await createCustomer(formData);
       }
-    });
+      setSaved(true);
+    } finally {
+      setLoading(false);
+    }
   }
+
+  const state = saved ? "success" : loading ? "loading" : "idle";
 
   return (
     <form action={handleSubmit} className="space-y-4 max-w-lg">

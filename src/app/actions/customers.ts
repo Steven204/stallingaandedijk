@@ -101,7 +101,6 @@ export async function updateCustomer(id: string, formData: FormData) {
 
   revalidatePath("/dashboard/customers");
   revalidatePath(`/dashboard/customers/${id}`);
-  redirect("/dashboard/customers");
 }
 
 export async function deleteCustomer(id: string) {
