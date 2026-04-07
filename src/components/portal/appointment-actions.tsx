@@ -13,7 +13,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { updateAppointmentPortal, cancelAppointmentPortal } from "@/app/actions/portal-appointments";
-import { Pencil, X, AlertCircle } from "lucide-react";
+import { Pencil, X, AlertCircle, Check, Loader2 } from "lucide-react";
+import { useSubmitState } from "@/components/ui/submit-button";
 
 interface Props {
   appointmentId: string;
@@ -26,6 +27,7 @@ interface Props {
 export function PortalAppointmentActions({ appointmentId, status, pickupDate, returnDate, notes }: Props) {
   const [editOpen, setEditOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { state, handleAction } = useSubmitState();
 
   const canEdit = status === "REQUESTED";
   const canCancel = status === "REQUESTED" || status === "CONFIRMED";
@@ -39,7 +41,9 @@ export function PortalAppointmentActions({ appointmentId, status, pickupDate, re
   async function handleUpdate(formData: FormData) {
     setError(null);
     try {
-      await updateAppointmentPortal(appointmentId, formData);
+      await handleAction(async () => {
+        await updateAppointmentPortal(appointmentId, formData);
+      });
       setEditOpen(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Er is een fout opgetreden");
@@ -85,7 +89,11 @@ export function PortalAppointmentActions({ appointmentId, status, pickupDate, re
                   {error}
                 </div>
               )}
-              <Button type="submit" className="w-full">Opslaan</Button>
+              <Button type="submit" disabled={state === "loading"} className={`w-full ${state === "success" ? "bg-green-600 hover:bg-green-600 text-white" : ""}`}>
+                {state === "loading" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {state === "success" && <Check className="mr-2 h-4 w-4" />}
+                {state === "success" ? "Opgeslagen!" : state === "loading" ? "Opslaan..." : "Opslaan"}
+              </Button>
             </form>
           </DialogContent>
         </Dialog>

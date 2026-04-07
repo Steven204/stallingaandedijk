@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { BrandCombobox } from "@/components/forms/brand-combobox";
 import { updateVehiclePortal, deleteVehiclePortal } from "@/app/actions/portal-vehicles";
-import { Pencil, Trash2, AlertCircle } from "lucide-react";
+import { Pencil, Trash2, AlertCircle, Check, Loader2 } from "lucide-react";
+import { useSubmitState } from "@/components/ui/submit-button";
 
 interface Props {
   vehicleId: string;
@@ -28,11 +29,14 @@ export function EditVehicleForm({ vehicleId, licensePlate, brand, model, lengthI
   const [editOpen, setEditOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const { state, handleAction } = useSubmitState();
 
   async function handleUpdate(formData: FormData) {
     setError(null);
     try {
-      await updateVehiclePortal(vehicleId, formData);
+      await handleAction(async () => {
+        await updateVehiclePortal(vehicleId, formData);
+      });
       setEditOpen(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Er is een fout opgetreden");
@@ -84,7 +88,11 @@ export function EditVehicleForm({ vehicleId, licensePlate, brand, model, lengthI
                 {error}
               </div>
             )}
-            <Button type="submit" className="w-full">Opslaan</Button>
+            <Button type="submit" disabled={state === "loading"} className={`w-full ${state === "success" ? "bg-green-600 hover:bg-green-600 text-white" : ""}`}>
+              {state === "loading" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {state === "success" && <Check className="mr-2 h-4 w-4" />}
+              {state === "success" ? "Opgeslagen!" : state === "loading" ? "Opslaan..." : "Opslaan"}
+            </Button>
           </form>
         </DialogContent>
       </Dialog>

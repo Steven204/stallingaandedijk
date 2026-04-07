@@ -13,7 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createAppointment } from "@/app/actions/portal-appointments";
-import { AlertCircle, ArrowRight } from "lucide-react";
+import { AlertCircle, ArrowRight, Check, Loader2 } from "lucide-react";
+import { useSubmitState } from "@/components/ui/submit-button";
 
 interface ClosedSeason {
   id: string;
@@ -37,6 +38,7 @@ const monthNames = [
 export function NewAppointmentForm({ vehicles, closedSeasons }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const { state, handleAction } = useSubmitState();
 
   // Minimum date = 4 days from now
   const minDate = new Date();
@@ -47,7 +49,9 @@ export function NewAppointmentForm({ vehicles, closedSeasons }: Props) {
     setError(null);
     setSuccess(false);
     try {
-      await createAppointment(formData);
+      await handleAction(async () => {
+        await createAppointment(formData);
+      });
       setSuccess(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Er is een fout opgetreden");
@@ -126,7 +130,11 @@ export function NewAppointmentForm({ vehicles, closedSeasons }: Props) {
           </div>
         )}
 
-        <Button type="submit">Afspraak aanvragen</Button>
+        <Button type="submit" disabled={state === "loading"} className={state === "success" ? "bg-green-600 hover:bg-green-600 text-white" : ""}>
+          {state === "loading" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {state === "success" && <Check className="mr-2 h-4 w-4" />}
+          {state === "success" ? "Opgeslagen!" : state === "loading" ? "Opslaan..." : "Afspraak aanvragen"}
+        </Button>
         <p className="text-xs text-muted-foreground">
           Minimaal 4 dagen van tevoren aanvragen. U ontvangt een bevestiging.
         </p>

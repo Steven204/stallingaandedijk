@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateProfile } from "@/app/actions/profile";
+import { useSubmitState } from "@/components/ui/submit-button";
+import { Check, Loader2 } from "lucide-react";
 import type { User } from "@/generated/prisma";
 
 interface ProfileFormProps {
@@ -12,12 +13,12 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ user }: ProfileFormProps) {
-  const [saved, setSaved] = useState(false);
+  const { state, handleAction } = useSubmitState();
 
   async function handleSubmit(formData: FormData) {
-    await updateProfile(formData);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    await handleAction(async () => {
+      await updateProfile(formData);
+    });
   }
 
   return (
@@ -72,10 +73,11 @@ export function ProfileForm({ user }: ProfileFormProps) {
       </div>
 
       <div className="flex items-center gap-3">
-        <Button type="submit">Opslaan</Button>
-        {saved && (
-          <span className="text-sm text-green-600">Gegevens opgeslagen!</span>
-        )}
+        <Button type="submit" disabled={state === "loading"} className={state === "success" ? "bg-green-600 hover:bg-green-600 text-white" : ""}>
+          {state === "loading" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {state === "success" && <Check className="mr-2 h-4 w-4" />}
+          {state === "success" ? "Opgeslagen!" : state === "loading" ? "Opslaan..." : "Opslaan"}
+        </Button>
       </div>
     </form>
   );

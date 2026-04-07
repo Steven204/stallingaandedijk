@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { useSubmitState } from "@/components/ui/submit-button";
+import { Check, Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -29,13 +31,16 @@ const vehicleTypes = [
 
 export function CustomerForm({ customer }: CustomerFormProps) {
   const isEditing = !!customer;
+  const { state, handleAction } = useSubmitState();
 
   async function handleSubmit(formData: FormData) {
-    if (isEditing) {
-      await updateCustomer(customer.id, formData);
-    } else {
-      await createCustomer(formData);
-    }
+    await handleAction(async () => {
+      if (isEditing) {
+        await updateCustomer(customer.id, formData);
+      } else {
+        await createCustomer(formData);
+      }
+    });
   }
 
   return (
@@ -166,8 +171,10 @@ export function CustomerForm({ customer }: CustomerFormProps) {
       )}
 
       <div className="flex gap-2">
-        <Button type="submit">
-          {isEditing ? "Opslaan" : "Klant aanmaken"}
+        <Button type="submit" disabled={state === "loading"} className={state === "success" ? "bg-green-600 hover:bg-green-600 text-white" : ""}>
+          {state === "loading" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {state === "success" && <Check className="mr-2 h-4 w-4" />}
+          {state === "success" ? "Opgeslagen!" : state === "loading" ? "Opslaan..." : isEditing ? "Opslaan" : "Klant aanmaken"}
         </Button>
         {isEditing && (
           <Button

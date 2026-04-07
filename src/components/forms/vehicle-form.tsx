@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useSubmitState } from "@/components/ui/submit-button";
+import { Check, Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -30,13 +32,16 @@ const vehicleTypes = [
 
 export function VehicleForm({ vehicle, customers }: VehicleFormProps) {
   const isEditing = !!vehicle;
+  const { state, handleAction } = useSubmitState();
 
   async function handleSubmit(formData: FormData) {
-    if (isEditing) {
-      await updateVehicle(vehicle.id, formData);
-    } else {
-      await createVehicle(formData);
-    }
+    await handleAction(async () => {
+      if (isEditing) {
+        await updateVehicle(vehicle.id, formData);
+      } else {
+        await createVehicle(formData);
+      }
+    });
   }
 
   return (
@@ -122,8 +127,10 @@ export function VehicleForm({ vehicle, customers }: VehicleFormProps) {
       </div>
 
       <div className="flex gap-2">
-        <Button type="submit">
-          {isEditing ? "Opslaan" : "Voertuig registreren"}
+        <Button type="submit" disabled={state === "loading"} className={state === "success" ? "bg-green-600 hover:bg-green-600 text-white" : ""}>
+          {state === "loading" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {state === "success" && <Check className="mr-2 h-4 w-4" />}
+          {state === "success" ? "Opgeslagen!" : state === "loading" ? "Opslaan..." : isEditing ? "Opslaan" : "Voertuig registreren"}
         </Button>
         {isEditing && (
           <Button
