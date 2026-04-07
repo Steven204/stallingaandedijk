@@ -51,3 +51,74 @@ export async function addVehicle(formData: FormData) {
   revalidatePath("/portal");
   revalidatePath("/dashboard/vehicle-requests");
 }
+
+const editVehicleSchema = z.object({
+  brand: z.string().max(100).optional(),
+  model: z.string().max(100).optional(),
+  lengthInMeters: z.number().positive().max(30),
+});
+
+export async function updateVehiclePortal(vehicleId: string, formData: FormData) {
+  const session = await getSession();
+
+  // Verify ownership
+  const vehicle = await prisma.vehicle.findUnique({ where: { id: vehicleId } });
+  if (!vehicle || vehicle.customerId !== session.user.id) {
+    throw new Error("Voertuig niet gevonden of behoort niet tot uw account");
+  }
+
+  const data = editVehicleSchema.parse({
+    brand: formData.get("brand") || undefined,
+    model: formData.get("model") || undefined,
+    lengthInMeters: parseFloat(formData.get("lengthInMeters") as string),
+  });
+
+  await prisma.vehicle.update({
+    where: { id: vehicleId },
+    data: {
+      brand: data.brand,
+      model: data.model,
+      lengthInMeters: data.lengthInMeters,
+    },
+  });
+
+  revalidatePath("/portal/my-vehicles");
+  revalidatePath("/portal");
+}
+
+export async function deleteVehiclePortal(vehicleId: string) {
+  const session = await getSession();
+
+  // Verify ownership
+  const vehicle = await prisma.vehicle.findUnique({
+    where: { id: vehicleId },
+    include: {
+      contracts: { where: { status: "ACTIVE" } },
+      placements: { where: { removedAt: null } },
+    },
+  });
+
+  if (!vehicle || vehicle.customerId !== session.user.id) {
+    throw new Error("Voertuig niet gevonden of behoort niet tot uw account");
+  }
+
+  if (vehicle.placements.length > 0) {
+    throw new Error("Dit voertuig is momenteel gestald en kan niet verwijderd worden");
+  }
+
+  if (vehicle.contracts.length > 0) {
+    throw new Error("Dit voertuig heeft een actief contract en kan niet verwijderd worden");
+  }
+
+  // Delete related records first
+  await prisma.maintenanceRequest.deleteMany({ where: { vehicleId } });
+  await prisma.appointment.deleteMany({ where: { vehicleId } });
+  await prisma.storagePhoto.deleteMany({ where: { vehicleId } });
+  await prisma.vehiclePlacement.deleteMany({ where: { vehicleId } });
+  await prisma.invoice.deleteMany({ where: { contract: { vehicleId } } });
+  await prisma.contract.deleteMany({ where: { vehicleId } });
+  await prisma.vehicle.delete({ where: { id: vehicleId } });
+
+  revalidatePath("/portal/my-vehicles");
+  revalidatePath("/portal");
+}

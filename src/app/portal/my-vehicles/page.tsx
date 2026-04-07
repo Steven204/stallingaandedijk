@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { MaintenanceForm } from "@/components/portal/maintenance-form";
 import { AddVehicleForm } from "@/components/portal/add-vehicle-form";
+import { EditVehicleForm } from "@/components/portal/edit-vehicle-form";
 
 const vehicleTypeLabels: Record<string, string> = {
   CARAVAN: "Caravan",
@@ -36,6 +37,10 @@ export default async function MyVehiclesPage() {
         orderBy: { takenAt: "desc" },
         take: 1,
         include: { location: true },
+      },
+      contracts: {
+        where: { status: "ACTIVE" },
+        select: { id: true },
       },
     },
   });
@@ -76,14 +81,22 @@ export default async function MyVehiclesPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {vehicle.isApproved && (
-                  <div className="flex justify-end">
+                <div className="flex justify-end gap-1">
+                  <EditVehicleForm
+                    vehicleId={vehicle.id}
+                    licensePlate={vehicle.licensePlate}
+                    brand={vehicle.brand}
+                    model={vehicle.model}
+                    lengthInMeters={vehicle.lengthInMeters}
+                    canDelete={vehicle.status !== "STORED" && vehicle.contracts.length === 0}
+                  />
+                  {vehicle.isApproved && (
                     <MaintenanceForm
                       vehicleId={vehicle.id}
                       licensePlate={vehicle.licensePlate}
                     />
-                  </div>
-                )}
+                  )}
+                </div>
                 <p className="text-sm">
                   <strong>Type:</strong> {vehicleTypeLabels[vehicle.type]}
                 </p>

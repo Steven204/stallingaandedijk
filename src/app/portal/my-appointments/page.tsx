@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { NewAppointmentForm } from "@/components/portal/new-appointment-form";
+import { PortalAppointmentActions } from "@/components/portal/appointment-actions";
 import { getClosedSeasons } from "@/lib/seasons";
 
 const statusLabels: Record<string, string> = {
@@ -78,12 +79,13 @@ export default async function MyAppointmentsPage() {
               <TableHead>Ophalen</TableHead>
               <TableHead>Terugbrengen</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Acties</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {appointments.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                   Nog geen afspraken
                 </TableCell>
               </TableRow>
@@ -97,6 +99,15 @@ export default async function MyAppointmentsPage() {
                   <TableCell>{formatDate(apt.returnDate)}</TableCell>
                   <TableCell>
                     <Badge>{statusLabels[apt.status]}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <PortalAppointmentActions
+                      appointmentId={apt.id}
+                      status={apt.status}
+                      pickupDate={apt.pickupDate?.toISOString().split("T")[0] ?? null}
+                      returnDate={apt.returnDate?.toISOString().split("T")[0] ?? null}
+                      notes={apt.notes}
+                    />
                   </TableCell>
                 </TableRow>
               ))
