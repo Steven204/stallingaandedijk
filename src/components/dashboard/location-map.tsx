@@ -119,16 +119,16 @@ export function LocationMap({ locations, isAdmin }: LocationMapProps) {
     <div>
       {/* Stats bar */}
       <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="rounded-lg border bg-card p-3 text-center">
-          <p className="text-2xl font-bold">{stats.total}</p>
+        <div className="rounded-xl border p-4 text-center bg-card">
+          <p className="text-2xl font-semibold" style={{ letterSpacing: "-0.6px" }}>{stats.total}</p>
           <p className="text-xs text-muted-foreground">Totaal</p>
         </div>
-        <div className="rounded-lg border bg-green-50 border-green-200 p-3 text-center">
-          <p className="text-2xl font-bold text-green-700">{stats.free}</p>
+        <div className="rounded-xl border border-green-200 p-4 text-center" style={{ backgroundColor: "rgba(34, 197, 94, 0.06)" }}>
+          <p className="text-2xl font-semibold text-green-700" style={{ letterSpacing: "-0.6px" }}>{stats.free}</p>
           <p className="text-xs text-green-600">Vrij</p>
         </div>
-        <div className="rounded-lg border bg-red-50 border-red-200 p-3 text-center">
-          <p className="text-2xl font-bold text-red-700">{stats.occupied}</p>
+        <div className="rounded-xl border border-red-200 p-4 text-center" style={{ backgroundColor: "rgba(239, 68, 68, 0.06)" }}>
+          <p className="text-2xl font-semibold text-red-700" style={{ letterSpacing: "-0.6px" }}>{stats.occupied}</p>
           <p className="text-xs text-red-600">Bezet</p>
         </div>
       </div>

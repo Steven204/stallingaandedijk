@@ -48,7 +48,7 @@ export default async function MyVehiclesPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">Mijn voertuigen</h2>
+        <h2 className="text-xl font-semibold">Mijn voertuigen</h2>
         <AddVehicleForm />
       </div>
       {vehicles.length === 0 ? (

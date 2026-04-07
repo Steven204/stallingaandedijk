@@ -58,7 +58,7 @@ export default async function InvoicesPage({
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Facturen</h1>
+      <h1 className="text-2xl font-semibold mb-6">Facturen</h1>
 
       <div className="rounded-md border">
         <Table>

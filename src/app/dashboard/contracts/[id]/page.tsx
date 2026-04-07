@@ -80,7 +80,7 @@ export default async function ContractDetailPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
+          <h1 className="text-2xl font-semibold flex items-center gap-2">
             <FileText className="h-6 w-6" />
             Contract #{String(contract.contractNumber).padStart(5, "0")}
           </h1>

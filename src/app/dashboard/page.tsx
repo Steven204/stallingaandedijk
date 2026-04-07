@@ -45,20 +45,20 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">
+      <h1 className="text-2xl font-semibold mb-6">
         Welkom, {session.user.name}
       </h1>
 
       {/* Quick action */}
       <Link href="/checkin" className="block mb-6">
-        <Card className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer">
+        <Card className="bg-primary text-primary-foreground hover:opacity-90 transition-opacity cursor-pointer" style={{ boxShadow: "rgba(255,255,255,0.2) 0px 0.5px 0px 0px inset, rgba(0,0,0,0.2) 0px 0px 0px 0.5px inset, rgba(0,0,0,0.05) 0px 1px 2px 0px" }}>
           <CardContent className="flex items-center gap-4 py-5">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary-foreground/20">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: "rgba(252, 251, 248, 0.15)" }}>
               <QrCode className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-lg font-bold">Voertuig inchecken</p>
-              <p className="text-sm opacity-80">Scan een QR-code of kies een locatie om een voertuig in te checken</p>
+              <p className="text-lg font-semibold">Voertuig inchecken</p>
+              <p className="text-sm opacity-75">Scan een QR-code of kies een locatie om een voertuig in te checken</p>
             </div>
             <ArrowRight className="ml-auto h-5 w-5 opacity-60" />
           </CardContent>
@@ -76,7 +76,7 @@ export default async function DashboardPage() {
               <stat.icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+              <div className="text-2xl font-semibold">{stat.value}</div>
             </CardContent>
           </Card>
         ))}
@@ -125,7 +125,7 @@ export default async function DashboardPage() {
             <CardContent>
               {card.count > 0 ? (
                 <p className="text-orange-700">
-                  <span className="text-3xl font-bold">{card.count}</span>
+                  <span className="text-3xl font-semibold">{card.count}</span>
                   <span className="text-sm ml-2">
                     {card.count === 1 ? card.label : card.labelPlural} wacht{card.count === 1 ? "" : "en"} op goedkeuring
                   </span>

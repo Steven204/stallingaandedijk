@@ -34,7 +34,7 @@ export default async function MyInvoicesPage() {
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">Mijn facturen</h2>
+      <h2 className="text-xl font-semibold mb-4">Mijn facturen</h2>
       <div className="rounded-md border">
         <Table>
           <TableHeader>

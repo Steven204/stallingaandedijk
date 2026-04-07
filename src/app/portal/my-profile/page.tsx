@@ -15,7 +15,7 @@ export default async function MyProfilePage() {
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">Mijn gegevens</h2>
+      <h2 className="text-xl font-semibold mb-4">Mijn gegevens</h2>
       <Card>
         <CardHeader>
           <CardTitle>Profiel bewerken</CardTitle>

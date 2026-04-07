@@ -67,7 +67,7 @@ export default async function VehiclesPage({
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Voertuigen</h1>
+        <h1 className="text-2xl font-semibold">Voertuigen</h1>
         {session.user.role === "ADMIN" && (
           <Link href="/dashboard/vehicles/new">
             <Button>

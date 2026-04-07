@@ -16,7 +16,7 @@ export default async function QrCodesPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">QR Codes</h1>
+      <h1 className="text-2xl font-semibold mb-6">QR Codes</h1>
       <p className="text-muted-foreground mb-6">
         Genereer en print QR-codes voor stallingslocaties. Medewerkers scannen deze
         codes met hun telefoon om voertuigen in te checken met een foto.

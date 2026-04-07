@@ -14,7 +14,7 @@ export default async function NewVehiclePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Nieuw voertuig</h1>
+      <h1 className="text-2xl font-semibold mb-6">Nieuw voertuig</h1>
       <VehicleForm customers={customers} />
     </div>
   );

@@ -47,7 +47,7 @@ export default async function MaintenancePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Onderhoudsverzoeken</h1>
+      <h1 className="text-2xl font-semibold mb-6">Onderhoudsverzoeken</h1>
 
       <div className="rounded-md border">
         <Table>

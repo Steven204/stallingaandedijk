@@ -45,20 +45,20 @@ export default async function RegistrationsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Aanmeldingen</h1>
+      <h1 className="text-2xl font-semibold mb-6">Aanmeldingen</h1>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
         <div className="rounded-lg border bg-orange-50 border-orange-200 p-3 flex items-center gap-3">
           <UserPlus className="h-5 w-5 text-orange-600" />
           <div>
-            <p className="text-2xl font-bold text-orange-700">{pendingUsers.length}</p>
+            <p className="text-2xl font-semibold text-orange-700">{pendingUsers.length}</p>
             <p className="text-xs text-orange-600">Wacht op goedkeuring</p>
           </div>
         </div>
         <div className="rounded-lg border bg-green-50 border-green-200 p-3 flex items-center gap-3">
           <UserPlus className="h-5 w-5 text-green-600" />
           <div>
-            <p className="text-2xl font-bold text-green-700">{approvedToday}</p>
+            <p className="text-2xl font-semibold text-green-700">{approvedToday}</p>
             <p className="text-xs text-green-600">Vandaag goedgekeurd</p>
           </div>
         </div>

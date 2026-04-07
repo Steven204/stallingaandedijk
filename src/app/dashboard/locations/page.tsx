@@ -64,7 +64,7 @@ export default async function LocationsPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Locaties</h1>
+        <h1 className="text-2xl font-semibold">Locaties</h1>
         {isAdmin && <LocationActions sections={sections} />}
       </div>
       <LocationMap locations={serializedLocations} isAdmin={isAdmin} />

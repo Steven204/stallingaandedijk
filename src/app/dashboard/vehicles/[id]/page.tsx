@@ -47,7 +47,7 @@ export default async function VehicleDetailPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">
+      <h1 className="text-2xl font-semibold">
         Voertuig: {vehicle.licensePlate}
       </h1>
 

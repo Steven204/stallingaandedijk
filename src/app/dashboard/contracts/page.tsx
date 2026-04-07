@@ -54,7 +54,7 @@ export default async function ContractsPage({
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Contracten</h1>
+        <h1 className="text-2xl font-semibold">Contracten</h1>
         <Link href="/dashboard/contracts/new">
           <Button>
             <Plus className="mr-2 h-4 w-4" />

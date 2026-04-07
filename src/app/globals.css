@@ -128,6 +128,53 @@
   html {
     @apply font-sans;
   }
+
+  /* Lovable typography: editorial headings everywhere */
+  h1 {
+    letter-spacing: -1.2px;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+  h2 {
+    letter-spacing: -0.6px;
+    font-weight: 600;
+    line-height: 1.15;
+  }
+  h3 {
+    letter-spacing: -0.3px;
+    font-weight: 600;
+  }
+}
+
+/* Lovable: card radius override for shadcn */
+[data-slot="card"] {
+  border-radius: 12px !important;
+  border-color: #eceae4 !important;
+}
+
+/* Lovable: softer sidebar active state */
+[data-sidebar="menu-button"][data-active="true"] {
+  background: rgba(28, 28, 28, 0.06) !important;
+  font-weight: 500;
+}
+
+/* Lovable: table styling */
+[data-slot="table"] th {
+  color: #5f5f5d;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+/* Lovable: badge styling */
+[data-slot="badge"] {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* Lovable: input focus warmth */
+[data-slot="input"]:focus-visible {
+  border-color: rgba(28, 28, 28, 0.4) !important;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px !important;
 }
 
 /* Lovable Design System — Public pages only */

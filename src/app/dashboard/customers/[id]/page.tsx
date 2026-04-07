@@ -54,7 +54,7 @@ export default async function CustomerDetailPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Klant: {customer.name}</h1>
+      <h1 className="text-2xl font-semibold">Klant: {customer.name}</h1>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

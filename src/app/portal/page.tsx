@@ -45,7 +45,7 @@ export default async function PortalDashboardPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">
+      <h2 className="text-2xl font-semibold mb-6">
         Welkom, {session.user.name}
       </h2>
 
@@ -190,7 +190,7 @@ export default async function PortalDashboardPage() {
               </Link>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-orange-700 mb-1">
+              <p className="text-2xl font-semibold text-orange-700 mb-1">
                 &euro; {openInvoiceTotal.toFixed(2)}
               </p>
               <p className="text-sm text-orange-600">

@@ -6,7 +6,7 @@ export default async function NewCustomerPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Nieuwe klant</h1>
+      <h1 className="text-2xl font-semibold mb-6">Nieuwe klant</h1>
       <CustomerForm />
     </div>
   );

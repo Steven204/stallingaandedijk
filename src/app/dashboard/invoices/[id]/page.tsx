@@ -62,7 +62,7 @@ export default async function InvoiceDetailPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
+          <h1 className="text-2xl font-semibold flex items-center gap-2">
             <Receipt className="h-6 w-6" />
             Factuur #{String(invoice.invoiceNumber).padStart(5, "0")}
           </h1>

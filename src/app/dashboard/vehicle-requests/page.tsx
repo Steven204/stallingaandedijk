@@ -28,12 +28,12 @@ export default async function VehicleRequestsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Voertuig aanvragen</h1>
+      <h1 className="text-2xl font-semibold mb-6">Voertuig aanvragen</h1>
 
       <div className="rounded-lg border bg-orange-50 border-orange-200 p-3 flex items-center gap-3 mb-6">
         <Car className="h-5 w-5 text-orange-600" />
         <div>
-          <p className="text-2xl font-bold text-orange-700">{pendingVehicles.length}</p>
+          <p className="text-2xl font-semibold text-orange-700">{pendingVehicles.length}</p>
           <p className="text-xs text-orange-600">Wacht{pendingVehicles.length === 1 ? "" : "en"} op goedkeuring</p>
         </div>
       </div>

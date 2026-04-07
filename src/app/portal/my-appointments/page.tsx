@@ -49,7 +49,7 @@ export default async function MyAppointmentsPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold">Mijn afspraken</h2>
+      <h2 className="text-xl font-semibold">Mijn afspraken</h2>
 
       <Card>
         <CardHeader>
